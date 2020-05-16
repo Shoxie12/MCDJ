@@ -12,6 +12,7 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -28,7 +29,7 @@ public class BlockMusicGenerator extends Block{
         setRegistryName(name);
     }
     @Override
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) { 
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) { 
 	    if(player.getHeldItemMainhand().getItem() instanceof ItemBlankRecord) {
 	    	int randi=0;
 	    	ItemStack rec;
@@ -47,8 +48,9 @@ public class BlockMusicGenerator extends Block{
 	    	}
 	    	
 	    	player.setHeldItem(hand, rec);
-	    	return true;
+	    	return ActionResultType.SUCCESS;
+	    	
 	    }
-		return false;
+	    return ActionResultType.FAIL;
     }
 }
