@@ -1,0 +1,19 @@
+{
+    "pools": [
+        {
+            "name": "pool1",
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "item",
+                    "name": "mcdj:blankrecord",
+                    "weight": 1
+                },
+                {
+                    "type": "empty",
+                    "weight": 4
+                }
+            ]
+        }
+    ]
+}

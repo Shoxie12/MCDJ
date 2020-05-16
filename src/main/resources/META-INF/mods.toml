@@ -1,0 +1,18 @@
+modLoader="javafml"
+loaderVersion="[26,)"
+issueTrackerURL="https://github.com/Shoxie12/MCDJ/issues"
+[[mods]]
+modId="mcdj"
+version="1.1"
+displayName="MCDJ"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/mcdj-moar-music-discs"
+#logoFile="examplemod.png"
+credits="This mod is uses a VorbisJava library by gagravarr"
+authors="Shoxie"
+# The description text for the mod (multi line!) (#mandatory)
+description='''
+This mod allow you to add an unlimited amount of your music as records in game.
+All you need to do is just put your .ogg files to .minecraft/Music/ folder and restart Minecraft
+
+And that's all!
+'''

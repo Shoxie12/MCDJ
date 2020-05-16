@@ -1,0 +1,28 @@
+{
+    "type": "minecraft:crafting_shaped",
+   
+    "pattern":
+    [
+        " P ",
+        "PWP",
+        " P "
+    ],
+   
+    "key":
+    {
+        "P":
+        {
+            "item": "mcdj:obsidianplate"
+        },
+        "W":
+        {
+            "item": "minecraft:painting"
+        }
+    },
+   
+    "result":
+    {
+        "item": "mcdj:blankrecord",
+        "count": 1
+    }
+}

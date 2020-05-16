@@ -1,0 +1,14 @@
+{
+    "pools": [
+        {
+            "name": "pool1",
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "mcdj:musicgenerator"
+                }
+            ]
+        }
+    ]
+}
