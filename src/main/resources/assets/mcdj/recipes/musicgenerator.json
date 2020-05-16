@@ -1,0 +1,36 @@
+{
+    "type": "minecraft:crafting_shaped",
+   
+    "pattern":
+    [
+        "RDR",
+        "INI",
+        "III"
+    ],
+   
+    "key":
+    {
+        "R":
+        {
+            "item": "minecraft:redstone"
+        },
+        "I":
+        {
+            "item": "minecraft:iron_ingot"
+        },
+        "D":
+        {
+            "item": "minecraft:diamond"
+        },
+        "N":
+        {
+            "item": "minecraft:noteblock"
+        }
+    },
+   
+    "result":
+    {
+        "item": "mcdj:musicgenerator",
+        "count": 1
+    }
+}
