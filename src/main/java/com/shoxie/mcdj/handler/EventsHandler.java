@@ -1,6 +1,6 @@
 package com.shoxie.mcdj.handler;
 
-import com.shoxie.mcdj.Items;
+import com.shoxie.mcdj.ModItems;
 
 import net.minecraft.world.storage.loot.LootEntryItem;
 import net.minecraft.world.storage.loot.LootPool;
@@ -37,6 +37,6 @@ public class EventsHandler
 	private static void updateloot(LootPool pool,int w,int q)
 	{
 	    if (pool != null) 
-	    	pool.addEntry(new LootEntryItem(Items.BLANK_RECORD, w, q, new LootFunction[0], new LootCondition[0], Items.BLANK_RECORD.getRegistryName().toString()));
+	    	pool.addEntry(new LootEntryItem(ModItems.BLANK_RECORD, w, q, new LootFunction[0], new LootCondition[0], ModItems.BLANK_RECORD.getRegistryName().toString()));
 	}
 }

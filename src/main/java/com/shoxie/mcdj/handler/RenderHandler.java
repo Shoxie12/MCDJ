@@ -1,7 +1,7 @@
 package com.shoxie.mcdj.handler;
 
-import com.shoxie.mcdj.Blocks;
-import com.shoxie.mcdj.Items;
+import com.shoxie.mcdj.ModBlocks;
+import com.shoxie.mcdj.ModItems;
 import com.shoxie.mcdj.mcdj;
 import com.shoxie.mcdj.item.ItemHQRecord;
 
@@ -14,12 +14,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class RenderHandler {
 	@SubscribeEvent
 	public static void onModelLoad(ModelRegistryEvent e) {
-		mcdj.proxy.renderItem(Item.getItemFromBlock(Blocks.MUSIC_GENERATOR), 0, Blocks.MUSIC_GENERATOR.getRegistryName());
-		mcdj.proxy.renderItem(Items.OBSIDIAN_PLATE, 0, Items.OBSIDIAN_PLATE.getRegistryName());
-		mcdj.proxy.renderItem(Items.BLANK_RECORD, 0, Items.BLANK_RECORD.getRegistryName());
+		mcdj.proxy.renderItem(Item.getItemFromBlock(ModBlocks.MUSIC_GENERATOR), 0, ModBlocks.MUSIC_GENERATOR.getRegistryName());
+		mcdj.proxy.renderItem(ModItems.OBSIDIAN_PLATE, 0, ModItems.OBSIDIAN_PLATE.getRegistryName());
+		mcdj.proxy.renderItem(ModItems.BLANK_RECORD, 0, ModItems.BLANK_RECORD.getRegistryName());
 		
 		if(mcdj.musicloaded) 
-			for (ItemHQRecord i : Items.RECORDS) 
+			for (ItemHQRecord i : ModItems.RECORDS) 
 				mcdj.proxy.renderItem(i, 0, i.getRegistryName());
 		
 	}

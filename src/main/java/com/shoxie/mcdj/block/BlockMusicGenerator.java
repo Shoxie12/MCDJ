@@ -2,7 +2,7 @@ package com.shoxie.mcdj.block;
 
 import java.util.Random;
 
-import com.shoxie.mcdj.Items;
+import com.shoxie.mcdj.ModItems;
 import com.shoxie.mcdj.Lib;
 import com.shoxie.mcdj.mcdj;
 import com.shoxie.mcdj.item.ItemBlankRecord;
@@ -36,11 +36,11 @@ public class BlockMusicGenerator extends Block{
 	    	int randi=0;
 	    	ItemStack rec;
 	    	if (mcdj.musicloaded) {
-	    		randi = rn.nextInt(Items.RECORDS.length+12);
-	    		if(randi < Items.RECORDS.length)
-	    			rec = new ItemStack(Items.RECORDS[randi]);
+	    		randi = rn.nextInt(ModItems.RECORDS.length+12);
+	    		if(randi < ModItems.RECORDS.length)
+	    			rec = new ItemStack(ModItems.RECORDS[randi]);
 	    		else
-	    			rec = new ItemStack(Lib.getVanillaRecord(randi - Items.RECORDS.length));
+	    			rec = new ItemStack(Lib.getVanillaRecord(randi - ModItems.RECORDS.length));
 	    	}
 	    	else
 	    	{

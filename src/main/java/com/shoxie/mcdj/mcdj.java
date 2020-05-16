@@ -35,6 +35,7 @@ public class mcdj
     public static Logger logger = LogManager.getLogger(MODID);
     
     public static final String DEFAULT_RECORD_TEXTURE = "record_default";
+	public static final String DEFAULT_BLANK_RECORD_SOUND = "br";
     public static boolean musicloaded;
     private boolean playlistchanged;
 	
@@ -72,8 +73,10 @@ public class mcdj
 		File rp = Paths.get(rootpath).toFile();
     	boolean rootexist = rp.exists();
     	boolean rootcreated = false;
-    	if(!rootexist) {
-    		rootcreated = GenerateResourcePack(rootpath, respath);
+    	if(!CheckResourcePack(rootpath, respath)) {
+    		if(rootexist) logger.error("MCDJ Root directory is damaged! Repairing...");
+    		GenerateResourcePack(rootpath, respath);
+    		rootcreated = true;
     		Lib.createSymLink(musicpath);
     	}
     	else
@@ -206,10 +209,20 @@ public class mcdj
 				Lib.writefile(rootpath+"mc.hash",Lib.HashMusicDir(MusicFiles));
 			}
 			musicloaded = records.size() > 0;
-			Items.RECORDS = records.toArray(new ItemHQRecord[records.size()]);
-			SoundEvents.RECORDS = sounds.toArray(new SoundEvent[sounds.size()]);
+			ModItems.RECORDS = records.toArray(new ItemHQRecord[records.size()]);
+			ModSoundEvents.RECORDS = sounds.toArray(new SoundEvent[sounds.size()]);
 		}
     }
+	
+	private static boolean CheckResourcePack(String r, String res) {
+		return (
+				Paths.get(res+"models/item").toFile().exists() && 
+				Paths.get(res+"textures/items").toFile().exists() && 
+				Paths.get(res+"sounds/streaming").toFile().exists() && 
+				Paths.get(res+"lang").toFile().exists() &&
+				Paths.get(r+"pack.mcmeta").toFile().exists()
+				);
+	}
 	
 	private static boolean GenerateResourcePack(String r, String res) {
 		mcdj.logger.info("MCDJ is installing...");
