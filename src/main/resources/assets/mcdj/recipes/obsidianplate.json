@@ -1,14 +1,17 @@
 {
-    "type": "minecraft:crafting_shapeless",
-    "ingredients": [
-        {
-            "item": "minecraft:obsidian"
-        },
+    "type": "minecraft:crafting_shaped",
+    "pattern":
+    [
+        "O",
+        "O"
+    ],
+    "key":
+    {
+        "O":
         {
             "item": "minecraft:obsidian"
         }
-    ],
-   
+    },
     "result":
     {
         "item": "mcdj:obsidianplate",
