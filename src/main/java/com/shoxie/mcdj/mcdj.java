@@ -2,6 +2,7 @@ package com.shoxie.mcdj;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
+
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gagravarr.vorbis.VorbisFile;
@@ -31,8 +34,9 @@ public class mcdj
 {
     public static final String MODID = "mcdj";
     public static final String NAME = "MCDJ";
-    public static final String VERSION = "1.0";
+    public static final String VERSION = "1.3";
     public static Logger logger = LogManager.getLogger(MODID);
+    public static Configuration config;
     
     public static final String DEFAULT_RECORD_TEXTURE = "record_default";
 	public static final String DEFAULT_BLANK_RECORD_SOUND = "br";
@@ -50,9 +54,20 @@ public class mcdj
 	@Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {	
-		String rootpath = "."+MODID+"/";
-		String respath = rootpath+"assets/"+MODID+"/";
+		File directory = event.getModConfigurationDirectory();
+        config = new Configuration(new File(directory.getPath(), "mcdj.cfg"));
+        Config.readConfig();
+        
+        String mpath = Config.mcdjpath;
+        String fname = Config.mcdjrootfoldername;
+        if(!mpath.equals("")) mpath = mpath + "/";
+        if(fname.equals("")) fname = ".mcdj";
+        
+        String rootpath = mpath+fname+"/";
+        String respath = rootpath+"assets/"+MODID+"/";
+        
 		String musicpath = respath+"sounds/streaming/";
+		logger.debug("Music folder is located at "+musicpath);
 		MusicScan(rootpath, respath, musicpath);
     }
 
@@ -64,6 +79,9 @@ public class mcdj
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		if(playlistchanged) proxy.rpreload();
+        if (config.hasChanged()) {
+            config.save();
+        }
 	}
 
 	
@@ -77,13 +95,13 @@ public class mcdj
     		if(rootexist) logger.error("MCDJ Root directory is damaged! Repairing...");
     		GenerateResourcePack(rootpath, respath);
     		rootcreated = true;
-    		Lib.createSymLink(musicpath);
+    		if(Config.sr) Lib.createSymLink(musicpath);
     	}
     	else
     		logger.info("Scanning music folder...");
     	proxy.rpinit(rp);
     	File[] MusicFiles = Paths.get(musicpath).toFile().listFiles();
-    	
+    	String type = "";
     	String soundsj = "";
     	String lang = "";
     	ArrayList<SoundEvent> sounds = new ArrayList<SoundEvent>();
@@ -130,9 +148,10 @@ public class mcdj
 				  
 				String curfile = MusicFiles[i].getName();
 				logger.debug("Processing file: "+curfile);
-				if(curfile.substring(curfile.length() - 4).compareTo(".ogg") == 0) {
-					curfile = curfile.substring(0,curfile.length() - 4);
-					
+				type = Lib.getfiletype(Paths.get(musicpath+curfile));
+				if(Lib.ismusic(type)) {
+					String ext = "."+FilenameUtils.getExtension(curfile);
+					curfile = curfile.substring(0,curfile.length() - (ext.length()));
 					//Checking file name for illegal symbols
 					String regextocheck = "[^a-z0-9- _]";
 					Matcher matcher = Pattern.compile(regextocheck).matcher(curfile);
@@ -149,7 +168,8 @@ public class mcdj
 								newcurfile = Lib.genrandomword(8);
 								logger.warn(curfile+" has too short name or many illegal symbols and will be saved as \""+newcurfile+"\"! Make sure it has vorbis tags or rename it manually later!");
 							}
-							File file = new File(musicpath+curfile+".ogg");
+							File file = new File(musicpath+curfile+ext);
+							ext = ".ogg";
 							File file2 = new File(musicpath+newcurfile+".ogg");
 							if (!file.renameTo(file2)) {
 								logger.error(" Error while renaming file" + curfile + ". Trying to save it with randomly generated name...");
@@ -171,7 +191,7 @@ public class mcdj
 						
 						//Getting vorbis data from ogg file
 						try {
-							VorbisFile vrb = new VorbisFile(Paths.get(musicpath+curfile+".ogg").toFile());
+							VorbisFile vrb = new VorbisFile(Paths.get(musicpath+curfile+ext).toFile());
 							if(!(vrb.getTags().getTitle() == null || vrb.getTags().getArtist() == null))
 								displayname = vrb.getTags().getArtist() + " - " + vrb.getTags().getTitle();
 							
@@ -184,7 +204,8 @@ public class mcdj
 						}
 						
 						logger.debug("File registered: "+curfile);
-						soundsj = soundsj + Lib.appendSounds(curfile,",");
+						String fc = soundsj.isEmpty() ? "{" : ",";
+						soundsj = soundsj + Lib.appendSounds(curfile,fc);
 						lang = lang + Lib.appendLang("item","record_"+curfile,"Music Disc",displayname,true);
 						Lib.generateItemJson("record_"+curfile,Albumarttexture, respath);
 					}
@@ -192,14 +213,22 @@ public class mcdj
 						logger.warn(curfile+" has illegal symbols in name and can't be renamed, please rename this file manually.");
 						continue;
 					}
+
 					
 					//Initialising sounds and records
 					SoundEvent snd = new SoundEvent(new ResourceLocation(mcdj.MODID,curfile)).setRegistryName(mcdj.MODID,curfile);
 					ItemHQRecord currec = new ItemHQRecord("record_"+curfile, snd);
 					sounds.add(snd);
-				    records.add(currec);
+					if(!Config.headlessmode) records.add(currec);
 				}
-				else logger.warn(curfile+" is not valid music file! Only .ogg files are allowed");
+				else {
+					if(!Paths.get(musicpath+"junk/").toFile().exists())
+						Paths.get(musicpath+"junk/").toFile().mkdirs();
+					File file = new File(proxy.getCWD()+musicpath+curfile);
+					File file2 = new File(proxy.getCWD()+musicpath+"junk/"+curfile);
+					if(file.renameTo(file2)) logger.warn("nonmusic file \"" +curfile+"\" is moved to junk folder!");
+					else logger.warn("nonmusic file \"" +curfile+"\" can't be moved! Please remove it manually later. ");
+				}
 			  }
 			}
 			if(playlistchanged) {
@@ -208,8 +237,8 @@ public class mcdj
 				Lib.writefile(respath+"lang/en_us.lang",lang);
 				Lib.writefile(rootpath+"mc.hash",Lib.HashMusicDir(MusicFiles));
 			}
-			musicloaded = records.size() > 0;
-			ModItems.RECORDS = records.toArray(new ItemHQRecord[records.size()]);
+			musicloaded = sounds.size() > 0;
+			if(!Config.headlessmode) ModItems.RECORDS = records.toArray(new ItemHQRecord[records.size()]);
 			ModSoundEvents.RECORDS = sounds.toArray(new SoundEvent[sounds.size()]);
 		}
     }

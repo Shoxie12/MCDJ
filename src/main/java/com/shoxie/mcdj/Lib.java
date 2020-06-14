@@ -1,9 +1,11 @@
 package com.shoxie.mcdj;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -160,5 +162,24 @@ public class Lib {
 			case 11: return new ItemStack(Items.RECORD_WARD).getItem();
 			default: return new ItemStack(Items.RECORD_11).getItem();
 		}
+	}
+
+	public static boolean ismusic(String s) {
+		if(s.contains("OggS")) return true;
+		
+		return false;
+	}
+
+	public static String getfiletype(Path s) {
+		String line="";
+		try(FileReader fr = new FileReader(s.toFile())) {
+            BufferedReader reader = new BufferedReader(fr);
+            line = reader.readLine();
+            reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return "";
+		}
+		return line;
 	}
 }

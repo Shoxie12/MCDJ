@@ -3,6 +3,7 @@ package com.shoxie.mcdj.block;
 import java.util.Random;
 
 import com.shoxie.mcdj.ModItems;
+import com.shoxie.mcdj.Config;
 import com.shoxie.mcdj.Lib;
 import com.shoxie.mcdj.mcdj;
 import com.shoxie.mcdj.item.ItemBlankRecord;
@@ -31,26 +32,29 @@ public class BlockMusicGenerator extends Block{
     
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-    {   
-	    if(playerIn.getHeldItemMainhand().getItem() instanceof ItemBlankRecord) {
-	    	int randi=0;
-	    	ItemStack rec;
-	    	if (mcdj.musicloaded) {
-	    		randi = rn.nextInt(ModItems.RECORDS.length+12);
-	    		if(randi < ModItems.RECORDS.length)
-	    			rec = new ItemStack(ModItems.RECORDS[randi]);
-	    		else
-	    			rec = new ItemStack(Lib.getVanillaRecord(randi - ModItems.RECORDS.length));
-	    	}
-	    	else
-	    	{
-	    		randi = rn.nextInt(12);
-	    		rec = new ItemStack(Lib.getVanillaRecord(randi));
-	    	}
-	    	
-	    	playerIn.setHeldItem(hand, rec);
-	    	return enableStats;
-	    }
-		return false;
+    {
+    if(Config.headlessmode && !Config.vanilaenabled) return false;
+    else if(playerIn.getHeldItemMainhand().getItem() instanceof ItemBlankRecord) {
+    	int randi=0;
+    	ItemStack rec;
+    	if (mcdj.musicloaded && !Config.headlessmode) {
+    		int maxrecords=ModItems.RECORDS.length;
+    		randi = rn.nextInt(maxrecords + (Config.vanilaenabled ? 12 : 0));
+    		if(randi < maxrecords)
+    			rec = new ItemStack(ModItems.RECORDS[randi]);
+    		else
+    			rec = new ItemStack(Lib.getVanillaRecord(randi - maxrecords));
+    	}
+    	else if(Config.vanilaenabled)
+    	{
+    		randi = rn.nextInt(12);
+    		rec = new ItemStack(Lib.getVanillaRecord(randi));
+    	}
+    	else return false;
+    	
+    	playerIn.setHeldItem(hand, rec);
+    	return enableStats;
+    }
+	return false;
     }
 }
