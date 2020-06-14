@@ -1,19 +1,18 @@
 package com.shoxie.mcdj;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-
 import net.minecraft.item.Items;
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -160,5 +159,24 @@ public class Lib {
 			case 11: return new ItemStack(Items.MUSIC_DISC_WARD).getItem();
 			default: return new ItemStack(Items.MUSIC_DISC_11).getItem();
 		}
+	}
+
+	public static boolean ismusic(String s) {
+		if(s.contains("OggS")) return true;
+		
+		return false;
+	}
+
+	public static String getfiletype(Path s) {
+		String line="";
+		try(FileReader fr = new FileReader(s.toFile())) {
+            BufferedReader reader = new BufferedReader(fr);
+            line = reader.readLine();
+            reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return "";
+		}
+		return line;
 	}
 }

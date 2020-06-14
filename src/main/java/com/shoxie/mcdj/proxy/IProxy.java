@@ -1,7 +1,6 @@
 package com.shoxie.mcdj.proxy;
 
 import java.io.File;
-import net.minecraft.block.Block;
 
 public interface IProxy {
  
