@@ -4,12 +4,15 @@ import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraftforge.fml.config.ModConfig.Type;
+import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import java.awt.Graphics;
 import java.awt.geom.AffineTransform;
@@ -24,24 +27,27 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
+
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gagravarr.vorbis.VorbisFile;
+
 import com.shoxie.mcdj.item.ItemHQRecord;
 import com.shoxie.mcdj.proxy.ServerProxy;
 import com.shoxie.mcdj.proxy.ClientProxy;
 import com.shoxie.mcdj.proxy.IProxy;
-import net.minecraft.util.text.TranslationTextComponent;
 
 @Mod("mcdj")
 public class mcdj
 {
     public static final String MODID = "mcdj";
     public static final String NAME = "MCDJ";
-    public static final String VERSION = "1.1";
-    public static Logger logger = LogManager.getLogger(MODID);
-    
+    public static final String VERSION = "1.3";
     public static final String DEFAULT_RECORD_TEXTURE = "record_default";
+    
+    public static Logger logger = LogManager.getLogger(MODID);
+  
     public static boolean musicloaded;
     private boolean playlistchanged;
 
@@ -49,16 +55,33 @@ public class mcdj
 	public static final String DEFAULT_BLANK_RECORD_SOUND = "br";
 	
     public mcdj() {
+    	
         MinecraftForge.EVENT_BUS.register(this);   
+        ModLoadingContext.get().registerConfig(Type.COMMON, Config.cfg);
         
-        String rootpath = "."+MODID+"/";
+        Config.loadConfig(Config.cfg, FMLPaths.CONFIGDIR.get().resolve("mcdj-common.toml"));
+        String mpath = Config.GetMcdjPath();
+        String fname = Config.GetMcdjRootFolderName();
+        if(!mpath.equals("")) mpath = mpath + "/";
+        if(fname.equals("")) fname = ".mcdj";
+        
+        String rootpath = mpath+fname+"/";
         String respath = rootpath+"assets/"+MODID+"/";
+        
 		String musicpath = respath+"sounds/streaming/";
+		logger.debug("Music folder is located at "+musicpath);
 		MusicScan(rootpath, respath, musicpath);
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class RegistryEvents {
+    public static class RegistryEvents {    	
+    	
+    	@SubscribeEvent
+    	public static void onSoundRegister(final RegistryEvent.Register<SoundEvent> e) {
+    		e.getRegistry().register(ModSoundEvents.BLANK_RECORD);
+    		if(musicloaded) e.getRegistry().registerAll(ModSoundEvents.RECORDS);
+    	}
+    	
         @SubscribeEvent
         public static void onBlockRegister(final RegistryEvent.Register<Block> e) {
         	e.getRegistry().register(ModBlocks.MUSIC_GENERATOR);
@@ -69,11 +92,12 @@ public class mcdj
         	
     		e.getRegistry().register(ModItems.OBSIDIAN_PLATE);
     		e.getRegistry().register(ModItems.BLANK_RECORD);
-    		e.getRegistry().register(new BlockItem(ModBlocks.MUSIC_GENERATOR, new Item.Properties().group(ItemGroup.MISC)).setRegistryName(ModBlocks.MUSIC_GENERATOR.getRegistryName()));
+    		e.getRegistry().register(new BlockItem(ModBlocks.MUSIC_GENERATOR, new Item.Properties().group(ItemGroup.DECORATIONS)).setRegistryName(ModBlocks.MUSIC_GENERATOR.getRegistryName()));
 
-    		if(musicloaded) 
+    		if(musicloaded && !Config.isHeadlessMode()) 
     			e.getRegistry().registerAll(ModItems.RECORDS);
         }
+        
     }
     
 	private void MusicScan(String rootpath, String respath, String musicpath) {
@@ -84,13 +108,14 @@ public class mcdj
     		if(rootexist) logger.error("MCDJ Root directory is damaged! Repairing...");
     		GenerateResourcePack(rootpath, respath);
     		rootcreated = true;
-    		Lib.createSymLink(musicpath);
+    		if(Config.IsShotcutRequied()) Lib.createSymLink(musicpath);
     	}
     	else
     		logger.info("Scanning music folder...");
     	proxy.rpinit(rp);
     	File[] MusicFiles = Paths.get(musicpath).toFile().listFiles();
     	
+    	String type = "";
     	String soundsj = "";
     	String lang = "";
     	ArrayList<SoundEvent> sounds = new ArrayList<SoundEvent>();
@@ -132,9 +157,10 @@ public class mcdj
 				  
 				String curfile = MusicFiles[i].getName();
 				logger.debug("Processing file: "+curfile);
-				if(curfile.substring(curfile.length() - 4).compareTo(".ogg") == 0) {
-					curfile = curfile.substring(0,curfile.length() - 4);
-					
+				type = Lib.getfiletype(Paths.get(musicpath+curfile));
+				if(Lib.ismusic(type)) {
+					String ext = "."+FilenameUtils.getExtension(curfile);
+					curfile = curfile.substring(0,curfile.length() - (ext.length()));
 					//Checking file name for illegal symbols
 					String regextocheck = "[^a-z0-9- _]";
 					Matcher matcher = Pattern.compile(regextocheck).matcher(curfile);
@@ -151,7 +177,8 @@ public class mcdj
 								newcurfile = Lib.genrandomword(8);
 								logger.warn(curfile+" has too short name or many illegal symbols and will be saved as \""+newcurfile+"\"! Make sure it has vorbis tags or rename it manually later!");
 							}
-							File file = new File(musicpath+curfile+".ogg");
+							File file = new File(musicpath+curfile+ext);
+							ext = ".ogg";
 							File file2 = new File(musicpath+newcurfile+".ogg");
 							if (!file.renameTo(file2)) {
 								logger.error(" Error while renaming file" + curfile + ". Trying to save it with randomly generated name...");
@@ -173,7 +200,7 @@ public class mcdj
 						
 						//Getting vorbis data from ogg file
 						try {
-							VorbisFile vrb = new VorbisFile(Paths.get(musicpath+curfile+".ogg").toFile());
+							VorbisFile vrb = new VorbisFile(Paths.get(musicpath+curfile+ext).toFile());
 							if(!(vrb.getTags().getTitle() == null || vrb.getTags().getArtist() == null))
 								displayname = vrb.getTags().getArtist() + " - " + vrb.getTags().getTitle();
 							
@@ -198,11 +225,20 @@ public class mcdj
 					
 					//Initialising sounds and records
 					SoundEvent snd = new SoundEvent(new ResourceLocation(mcdj.MODID,curfile)).setRegistryName(mcdj.MODID,curfile);
-					ItemHQRecord currec = new ItemHQRecord(curfile, snd);
 					sounds.add(snd);
-				    records.add(currec);
+					if(!Config.isHeadlessMode()) records.add(new ItemHQRecord(curfile, snd));
+					
+					
+				    
 				}
-				else logger.warn(curfile+" is not valid music file! Only .ogg files are allowed");
+				else {
+					if(!Paths.get(musicpath+"junk/").toFile().exists())
+						Paths.get(musicpath+"junk/").toFile().mkdirs();
+					File file = new File(proxy.getCWD()+musicpath+curfile);
+					File file2 = new File(proxy.getCWD()+musicpath+"junk/"+curfile);
+					if(file.renameTo(file2)) logger.warn("nonmusic file \"" +curfile+"\" is moved to junk folder!");
+					else logger.warn("nonmusic file \"" +curfile+"\" can't be moved! Please remove it manually later. ");
+				}
 			  }
 			}
 			if(playlistchanged) {
@@ -212,8 +248,8 @@ public class mcdj
 				Lib.writefile(respath+"lang/en_us.json",lang);
 				Lib.writefile(rootpath+"mc.hash",Lib.HashMusicDir(MusicFiles));
 			}
-			musicloaded = records.size() > 0;
-			ModItems.RECORDS = records.toArray(new ItemHQRecord[records.size()]);
+			musicloaded = sounds.size() > 0;
+			if(!Config.isHeadlessMode()) ModItems.RECORDS = records.toArray(new ItemHQRecord[records.size()]);
 			ModSoundEvents.RECORDS = sounds.toArray(new SoundEvent[sounds.size()]);
 		}
     }
@@ -231,7 +267,7 @@ public class mcdj
 	private static void GenerateResourcePack(String r, String res) {
 		Paths.get(res+"models/item").toFile().mkdirs();
 		Paths.get(res+"textures/items").toFile().mkdirs();
-		Paths.get(res+"sounds/streaming").toFile().mkdirs();
+		Paths.get(res+"sounds/streaming/").toFile().mkdirs();
 		Paths.get(res+"lang").toFile().mkdirs();
 		Lib.writefile(r+"pack.mcmeta","{\"pack\": {\"pack_format\": 3,\"description\": \"mcdj\"}}");
 	}
@@ -243,10 +279,7 @@ public class mcdj
     	int ind = base64image.indexOf("/9j/");
     	if(ind!=-1 && ind < 100)
     		base64image = base64image.substring(ind);
-    	else {
-    		mcdj.logger.warn("Can't read album art of song "+curfile+" this image type doesn't support yet :("); 
-    		return false;
-    	}
+    	else return false;
     	
     	byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64image);
     	BufferedImage AlbumArt = null;

@@ -2,6 +2,7 @@ package com.shoxie.mcdj.block;
 
 import java.util.Random;
 
+import com.shoxie.mcdj.Config;
 import com.shoxie.mcdj.Lib;
 import com.shoxie.mcdj.ModItems;
 import com.shoxie.mcdj.mcdj;
@@ -28,29 +29,31 @@ public class BlockMusicGenerator extends Block{
         );
         setRegistryName(name);
     }
+    
     @Override
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) { 
-	    if(player.getHeldItemMainhand().getItem() instanceof ItemBlankRecord) {
+	    if(Config.isHeadlessMode() && !Config.isvanilaenabled()) return ActionResultType.FAIL;
+	    else if(player.getHeldItemMainhand().getItem() instanceof ItemBlankRecord) {
 	    	int randi=0;
 	    	ItemStack rec;
-	    	if (mcdj.musicloaded) {
+	    	if (mcdj.musicloaded && !(Config.isHeadlessMode())) {
 	    		int maxrecords=ModItems.RECORDS.length;
-	    		randi = rn.nextInt(maxrecords+12);
+	    		randi = rn.nextInt(maxrecords + (Config.isvanilaenabled() ? 12 : 0));
 	    		if(randi < maxrecords)
 	    			rec = new ItemStack(ModItems.RECORDS[randi]);
 	    		else
 	    			rec = new ItemStack(Lib.getVanillaRecord(randi - maxrecords));
 	    	}
-	    	else
+	    	else if(Config.isvanilaenabled())
 	    	{
 	    		randi = rn.nextInt(12);
 	    		rec = new ItemStack(Lib.getVanillaRecord(randi));
 	    	}
+	    	else return ActionResultType.FAIL;
 	    	
 	    	player.setHeldItem(hand, rec);
 	    	return ActionResultType.SUCCESS;
-	    	
 	    }
-	    return ActionResultType.FAIL;
+		return ActionResultType.FAIL;
     }
 }

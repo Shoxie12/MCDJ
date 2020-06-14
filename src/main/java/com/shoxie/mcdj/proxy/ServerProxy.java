@@ -1,10 +1,6 @@
 package com.shoxie.mcdj.proxy;
 
 import java.io.File;
-import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
 
 public class ServerProxy implements IProxy {
 	
@@ -20,4 +16,5 @@ public class ServerProxy implements IProxy {
 	public String getCWD(){
 		return System.getProperty("user.dir")+"/";
 	}
+
 }

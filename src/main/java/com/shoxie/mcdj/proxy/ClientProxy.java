@@ -3,9 +3,8 @@ package com.shoxie.mcdj.proxy;
 import java.io.File;
 import java.util.Map;
 
+import com.shoxie.mcdj.Config;
 import com.shoxie.mcdj.mcdj;
-
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.ClientResourcePackInfo;
 import net.minecraft.resources.FolderPack;
@@ -23,7 +22,7 @@ public class ClientProxy implements IProxy {
         final String id = "mcdj";
         final ITextComponent name = new StringTextComponent("MCDJ Resource Pack");
         final ITextComponent description = new StringTextComponent("Makes possible to load your music automatically");
-        final IResourcePack pack = new FolderPack(new File(mcdj.proxy.getCWD()+"."+mcdj.MODID));
+        final IResourcePack pack = new FolderPack(new File(mcdj.proxy.getCWD()+"/"+Config.GetMcdjPath()+"/"+Config.GetMcdjRootFolderName()));
         Minecraft.getInstance().getResourcePackList().addPackFinder(new IPackFinder()
         {
             @Override
