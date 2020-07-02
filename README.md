@@ -16,7 +16,7 @@ This mod also add some new things:
 
 And that's all Now you can start Minecraft again and enjoy your music in game!
 
-More information about using it in game and troubleshooting can be found on offical mod page on curseforge
+More information about installing, configuring, and working with this mod can be found in <a href="https://github.com/Shoxie12/MCDJ/wiki">MCDJ Wiki</a>
 
 Thank you for using this mod, i hope you like it :)
 
