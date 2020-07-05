@@ -157,6 +157,7 @@ public class Lib {
 			case 9: return new ItemStack(Items.MUSIC_DISC_STRAD).getItem();
 			case 10: return new ItemStack(Items.MUSIC_DISC_WAIT).getItem();
 			case 11: return new ItemStack(Items.MUSIC_DISC_WARD).getItem();
+			case 12: return new ItemStack(Items.field_234775_qK_).getItem();
 			default: return new ItemStack(Items.MUSIC_DISC_11).getItem();
 		}
 	}

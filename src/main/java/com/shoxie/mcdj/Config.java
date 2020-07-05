@@ -8,7 +8,8 @@ import com.electronwill.nightconfig.core.io.WritingMode;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.config.ModConfig.Loading;
+import net.minecraftforge.fml.config.ModConfig.Reloading;
 
 @Mod.EventBusSubscriber(modid = mcdj.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Config {
@@ -63,11 +64,11 @@ public class Config {
     }
 
     @SubscribeEvent
-    public static void onReload(final ModConfig.ConfigReloading configEvent) {
+    public static void onReload(final Reloading configEvent) {
     }
     
     @SubscribeEvent
-    public static void onLoad(final ModConfig.Loading configEvent) {
+    public static void onLoad(final Loading configEvent) {
 
     }
     

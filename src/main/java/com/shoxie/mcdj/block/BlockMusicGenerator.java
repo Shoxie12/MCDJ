@@ -13,6 +13,7 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -30,14 +31,14 @@ public class BlockMusicGenerator extends Block{
     }
     
     @Override
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) { 
-	    if(Config.isHeadlessMode() && !Config.isvanilaenabled()) return false;
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) { 
+	    if(Config.isHeadlessMode() && !Config.isvanilaenabled()) return ActionResultType.FAIL;
 	    else if(player.getHeldItemMainhand().getItem() instanceof ItemBlankRecord) {
 	    	int randi=0;
 	    	ItemStack rec;
 	    	if (mcdj.musicloaded && !(Config.isHeadlessMode())) {
 	    		int maxrecords=ModItems.RECORDS.length;
-	    		randi = rn.nextInt(maxrecords + (Config.isvanilaenabled() ? 12 : 0));
+	    		randi = rn.nextInt(maxrecords + (Config.isvanilaenabled() ? 13 : 0));
 	    		if(randi < maxrecords)
 	    			rec = new ItemStack(ModItems.RECORDS[randi]);
 	    		else
@@ -45,14 +46,14 @@ public class BlockMusicGenerator extends Block{
 	    	}
 	    	else if(Config.isvanilaenabled())
 	    	{
-	    		randi = rn.nextInt(12);
+	    		randi = rn.nextInt(13);
 	    		rec = new ItemStack(Lib.getVanillaRecord(randi));
 	    	}
-	    	else return false;
+	    	else return ActionResultType.FAIL;
 	    	
 	    	player.setHeldItem(hand, rec);
-	    	return true;
+	    	return ActionResultType.SUCCESS;
 	    }
-		return false;
+		return ActionResultType.FAIL;
     }
 }
