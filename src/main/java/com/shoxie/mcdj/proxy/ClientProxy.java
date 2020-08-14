@@ -28,20 +28,20 @@ public class ClientProxy implements IProxy {
         
         Minecraft.getInstance().getResourcePackList().addPackFinder(new IPackFinder()
         {
-            @Override
-            public <T extends ResourcePackInfo> void func_230230_a_(Consumer<T> nameToPackMap, IFactory<T> packInfoFactory)
-            {
-            	nameToPackMap.accept(packInfoFactory.create(id, true, () -> pack, pack, PackMetadataSection, ResourcePackInfo.Priority.BOTTOM, 
-            		
-            		new IPackNameDecorator(){
+			@Override
+			public void func_230230_a_(Consumer<ResourcePackInfo> nameToPackMap, IFactory packInfoFactory) {
+	            {
+	            	nameToPackMap.accept(packInfoFactory.create(id, true, () -> pack, pack, PackMetadataSection, ResourcePackInfo.Priority.BOTTOM, 
+	            		
+	            		new IPackNameDecorator(){
 
-        			@Override
-        			public ITextComponent decorate(ITextComponent p_decorate_1_) {
-        				return name;
-        			}
-                	
-                }));
-            }
+		        			@Override
+		        			public ITextComponent decorate(ITextComponent p_decorate_1_) {
+		        				return name;
+		        			}
+	            	}));
+	            }
+			}
         });
           this.rpreload();
 	}
