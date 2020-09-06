@@ -2,6 +2,9 @@ package com.shoxie.mcdj.proxy;
 
 import java.io.File;
 
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.World;
+
 public interface IProxy {
  
 
@@ -12,5 +15,14 @@ public interface IProxy {
 	
 
 	String getCWD();
+
+
+	void ScreenInit();
+
+
+	World getClientWorld();
+
+
+	PlayerEntity getClientPlayer();
 
 }

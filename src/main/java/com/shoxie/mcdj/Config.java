@@ -14,38 +14,48 @@ import net.minecraftforge.fml.config.ModConfig.Reloading;
 @Mod.EventBusSubscriber(modid = mcdj.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Config {
 	private static ForgeConfigSpec.ConfigValue<Boolean> headlessmode;
+	private static ForgeConfigSpec.ConfigValue<Boolean> legacymg;
 	private static ForgeConfigSpec.ConfigValue<String> mcdjpath;
 	private static ForgeConfigSpec.ConfigValue<String> mcdjrootfoldername;
-	private static ForgeConfigSpec.ConfigValue<Boolean> sr;
-	private static ForgeConfigSpec.ConfigValue<Boolean> vanilaenabled;
+	private static ForgeConfigSpec.ConfigValue<Boolean> shortcut;
+	private static ForgeConfigSpec.ConfigValue<Boolean> hires_texture;
+	private static ForgeConfigSpec.ConfigValue<Boolean> albumarts;
     public static ForgeConfigSpec cfg;
 
 
     static {
 		ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
-		builder.push("general");
+		builder.push("general");		
+		mcdjrootfoldername = builder.comment(
+				"",
+				"MCDJ will create its root folder with that name.").define("RootFolderName", ".mcdj");
+		
+		shortcut = builder.comment(
+				"",
+				"Let MCDJ create shortcut called \"Music\" to streaming folder in .minecraft").define("Shortcut", true);
+		
+		albumarts = builder.comment(
+				"",
+				"Draws album art on top of the disc if possible").define("AlbumArt", false);
+		
+		hires_texture = builder.comment(
+				"",
+				"Enables high resolution disc texture (recommended for use with album arts)").define("HiresDiscTextures", false);		
+		
 		headlessmode = builder.comment(
 				"",
-				"In headless mode MCDJ will only add sounds to the game, but not create music discs.",
-				"usefull for mapbased modpacks").define("HeadlessMode", false);
+				"In headless mode MCDJ will only add sounds to the game, but not create music discs.").define("HeadlessMode", false);
+		
+		legacymg = builder.comment(
+				"",
+				"Returns an old Music Generator, that give you the random music disc ",
+				"when you use the blank disc on it.").define("LegacyMusicGenerator", false);
 		
 		mcdjpath = builder.comment(
 				"",
 				"Path to mcdj root folder.",
 				"examples: 'mods' = /.minecraft/mods/; 'misc/mcdj' = /.minecraft/misc/mcdj",
-				"leave blank for choise minecraft root folder.").define("MCDJPath", "");
-		
-		mcdjrootfoldername = builder.comment(
-				"",
-				"MCDJ root folder name.").define("MCDJRootFolderName", ".mcdj");
-		
-		sr = builder.comment(
-				"",
-				"Generate shotcut to music folder.").define("ShotcutRequied", true);
-		
-		vanilaenabled = builder.comment(
-				"",
-				"Should music generator also produce vanila records?").define("VanilaRecordsEnabled", true);
+				"leave blank for choise .minecraft folder.").define("MCDJPath", "");
 		
 		builder.pop();
 		cfg = builder.build();
@@ -76,6 +86,10 @@ public class Config {
 		return headlessmode.get();
 	}
 	
+	public static boolean isLegacyMode() {
+		return legacymg.get();
+	}
+	
 	public static String GetMcdjPath() {
 		return mcdjpath.get();
 	}
@@ -84,12 +98,16 @@ public class Config {
 		return mcdjrootfoldername.get();
 	}
 	
-	public static boolean IsShotcutRequied() {
-		return sr.get();
+	public static boolean IsShortcutRequied() {
+		return shortcut.get();
+	}
+	
+	public static boolean IsHiResTexture() {
+		return hires_texture.get();
 	}
 
-	public static boolean isvanilaenabled() {
-		return vanilaenabled.get();
+	public static boolean AlbumArts() {
+		return albumarts.get();
 	}
     
 }
