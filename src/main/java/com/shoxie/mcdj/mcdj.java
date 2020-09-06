@@ -1,20 +1,29 @@
 package com.shoxie.mcdj;
 
 import net.minecraft.block.Block;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.config.ModConfig.Type;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -33,8 +42,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gagravarr.vorbis.VorbisFile;
 
-import com.shoxie.mcdj.item.ItemHQRecord;
+import com.shoxie.mcdj.container.MusicGeneratorContainer;
+import com.shoxie.mcdj.item.CustomDiscItem;
+import com.shoxie.mcdj.networking.Networking;
 import com.shoxie.mcdj.proxy.ServerProxy;
+import com.shoxie.mcdj.tile.MusicGeneratorTile;
 import com.shoxie.mcdj.proxy.ClientProxy;
 import com.shoxie.mcdj.proxy.IProxy;
 
@@ -43,8 +55,7 @@ public class mcdj
 {
     public static final String MODID = "mcdj";
     public static final String NAME = "MCDJ";
-    public static final String VERSION = "1.3";
-    public static final String DEFAULT_RECORD_TEXTURE = "record_default";
+    public static final String VERSION = "2.0";
     
     public static Logger logger = LogManager.getLogger(MODID);
   
@@ -53,6 +64,8 @@ public class mcdj
 
     public static final IProxy proxy = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> new ServerProxy());
 	public static final String DEFAULT_BLANK_RECORD_SOUND = "br";
+	public static final String DEFTEXTURE = "defaultrecord";
+	public static final String DEFTEXTURE16 = "defaultrecord16";
 	
     public mcdj() {
     	
@@ -77,6 +90,17 @@ public class mcdj
     public static class RegistryEvents {    	
     	
     	@SubscribeEvent
+    	public static void ScreenInit(final FMLClientSetupEvent event) {
+    		
+    	}
+    	
+    	@SubscribeEvent
+        public static void NetworkingInit(final FMLCommonSetupEvent event) {
+        	proxy.ScreenInit();
+            Networking.registerMessages();
+        }
+    	
+    	@SubscribeEvent
     	public static void onSoundRegister(final RegistryEvent.Register<SoundEvent> e) {
     		e.getRegistry().register(ModSoundEvents.BLANK_RECORD);
     		if(musicloaded) e.getRegistry().registerAll(ModSoundEvents.RECORDS);
@@ -98,6 +122,20 @@ public class mcdj
     			e.getRegistry().registerAll(ModItems.RECORDS);
         }
         
+        @SubscribeEvent
+        public static void onTileEntityRegistry(final RegistryEvent.Register<TileEntityType<?>> event) {
+        	event.getRegistry().register(TileEntityType.Builder.create(MusicGeneratorTile::new, ModBlocks.MUSIC_GENERATOR).build(null).setRegistryName("musicgenerator"));
+        }
+        
+        @SubscribeEvent
+        public static void onContainerRegistry(final RegistryEvent.Register<ContainerType<?>> event) {
+            event.getRegistry().register(IForgeContainerType.create((windowId, inv, data) -> {
+                BlockPos pos = data.readBlockPos();
+                MusicGeneratorTile tile = (MusicGeneratorTile) proxy.getClientWorld().getTileEntity(pos);
+                return new MusicGeneratorContainer(windowId, tile, inv.player, inv);
+            }).setRegistryName("musicgenerator"));
+        
+        }
     }
     
 	private void MusicScan(String rootpath, String respath, String musicpath) {
@@ -108,7 +146,7 @@ public class mcdj
     		if(rootexist) logger.error("MCDJ Root directory is damaged! Repairing...");
     		GenerateResourcePack(rootpath, respath);
     		rootcreated = true;
-    		if(Config.IsShotcutRequied()) Lib.createSymLink(musicpath);
+    		if(Config.IsShortcutRequied()) Lib.createSymLink(musicpath);
     	}
     	else
     		logger.info("Scanning music folder...");
@@ -119,12 +157,12 @@ public class mcdj
     	String soundsj = "";
     	String lang = "";
     	ArrayList<SoundEvent> sounds = new ArrayList<SoundEvent>();
-	    ArrayList<ItemHQRecord> records = new ArrayList<ItemHQRecord>();
+	    ArrayList<CustomDiscItem> records = new ArrayList<CustomDiscItem>();
 		
 		//Scaning music folder
 		if(MusicFiles.length == 0) {
 			if(rootexist) logger.info("Your playlist is empty. Try to add some music!");
-			else if(rootcreated) logger.info("MCDJ installed sucessful! Now go to .minecraft/Music/ folder and add some music (restarting Minecraft is requred!)");
+			else if(rootcreated) logger.info("MCDJ installed successfully! Now you can close Minecraft add some music.");
 			else logger.error("Error while installing MCDJ :(");
 			musicloaded=false;
 			
@@ -196,16 +234,14 @@ public class mcdj
 						}
 						
 						String displayname = Lib.ToUpperWords(curfile.replaceAll("_", " "));
-						boolean Albumarttexture = false;
-						
+						boolean customtexture = false;
 						//Getting vorbis data from ogg file
 						try {
 							VorbisFile vrb = new VorbisFile(Paths.get(musicpath+curfile+ext).toFile());
 							if(!(vrb.getTags().getTitle() == null || vrb.getTags().getArtist() == null))
 								displayname = vrb.getTags().getArtist() + " - " + vrb.getTags().getTitle();
 							
-							String art = vrb.getTags().getAlbumArt();
-							if(art!=null) Albumarttexture = GenerateAlbumArtTexture(curfile,art,respath);
+							customtexture = GenerateAlbumArtTexture(curfile,vrb.getTags().getAlbumArt(),respath);
 						} catch (FileNotFoundException e) {
 							logger.error("Error getting vorbis data from ogg file!"+e.getMessage());
 						} catch (IOException e) {
@@ -215,8 +251,8 @@ public class mcdj
 						logger.debug("File registered: "+curfile);
 						String fc = soundsj.isEmpty() ? "{" : ",";
 						soundsj = soundsj + Lib.appendSounds(curfile,fc);
-						lang = lang + Lib.appendLang("item","record_"+curfile,"Music Disk",displayname,fc);
-						Lib.generateItemJson("record_"+curfile,Albumarttexture, respath);
+						lang = lang + Lib.appendLang("item","record_"+curfile,"Music Disc",displayname,fc);
+						Lib.generateItemJson("record_"+curfile,customtexture, respath);
 					}
 					else if(matcher.find()) {
 						logger.warn(curfile+" has illegal symbols in name and can't be renamed, please rename this file manually.");
@@ -226,7 +262,7 @@ public class mcdj
 					//Initialising sounds and records
 					SoundEvent snd = new SoundEvent(new ResourceLocation(mcdj.MODID,curfile)).setRegistryName(mcdj.MODID,curfile);
 					sounds.add(snd);
-					if(!Config.isHeadlessMode()) records.add(new ItemHQRecord(curfile, snd));
+					if(!Config.isHeadlessMode()) records.add(new CustomDiscItem(curfile, snd,records.size()));
 					
 					
 				    
@@ -249,7 +285,7 @@ public class mcdj
 				Lib.writefile(rootpath+"mc.hash",Lib.HashMusicDir(MusicFiles));
 			}
 			musicloaded = sounds.size() > 0;
-			if(!Config.isHeadlessMode()) ModItems.RECORDS = records.toArray(new ItemHQRecord[records.size()]);
+			if(!Config.isHeadlessMode()) ModItems.RECORDS = records.toArray(new CustomDiscItem[records.size()]);
 			ModSoundEvents.RECORDS = sounds.toArray(new SoundEvent[sounds.size()]);
 		}
     }
@@ -274,25 +310,25 @@ public class mcdj
 	
 	private boolean GenerateAlbumArtTexture(String curfile,String base64image, String respath)
     {
-    	
+    	boolean artfound = false;
+		
     	//Getting album art from base64
-    	int ind = base64image.indexOf("/9j/");
-    	if(ind!=-1 && ind < 100)
-    		base64image = base64image.substring(ind);
-    	else return false;
-    	
-    	byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64image);
-    	BufferedImage AlbumArt = null;
-		try {
-			AlbumArt = ImageIO.read(new ByteArrayInputStream(imageBytes));
-		} catch (IOException e1) {
-			mcdj.logger.error("Error getting album art!"+e1.getMessage());
-			return false;
+		if(Config.AlbumArts() && base64image != null) {
+	    	int ind = base64image.indexOf("/9j/");
+	    	if(ind!=-1 && ind < 100) {
+	    		base64image = base64image.substring(ind);
+	    		artfound = true;
+	    	}
+	    	else if(Config.IsHiResTexture()) return false;
 		}
+		else if(Config.IsHiResTexture()) return false;
 		
     	BufferedImage Basetexture = null;
 		try {
-			Basetexture = ImageIO.read(getClass().getClassLoader().getResourceAsStream("record_base.png"));
+			if(Config.IsHiResTexture())
+				Basetexture = ImageIO.read(getClass().getClassLoader().getResourceAsStream("custom.png"));
+			else
+				Basetexture = ImageIO.read(getClass().getClassLoader().getResourceAsStream("custom16.png"));
 		} catch (IOException e1) {
 			mcdj.logger.error("Error getting base texture! Try to reinstall MCDJ"+e1.getMessage());
 			return false;
@@ -303,6 +339,28 @@ public class mcdj
 		double wb = Basetexture.getWidth();
 		double h = hb/2.28;
 		double w = wb/3.37;
+		
+    	BufferedImage AlbumArt = null;
+    	if(artfound) {
+	    	byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64image);
+			try {
+				AlbumArt = ImageIO.read(new ByteArrayInputStream(imageBytes));
+			} catch (IOException e1) {
+				mcdj.logger.error("Error getting album art!"+e1.getMessage());
+			}
+    	}
+    	
+    	else if(AlbumArt == null){
+    		AlbumArt = new BufferedImage((int)hb/2, (int)wb/2, BufferedImage.TYPE_INT_ARGB);
+    		Graphics2D g2d = AlbumArt.createGraphics();
+    		
+    		//GradientPaint p = new GradientPaint(0, 0, new Color(getrand(curfile, 50),getrand(curfile, 150),getrand(curfile, 250)), (int)h, (int)w, new Color(getrand(curfile, 500),getrand(curfile, 300),getrand(curfile, 450)));
+    		Color p = new Color(getrand(curfile, 50),getrand(curfile, 100),getrand(curfile, 150));
+    		//g2d.setPaint ( new Color ( getrand(curfile,2), getrand(curfile,5), getrand(curfile,3) ) );
+    		g2d.setPaint (p);
+    		g2d.fillRect (0, 0, AlbumArt.getWidth(), AlbumArt.getHeight());
+    	}
+		
 		double scale_h = Math.round((h / AlbumArt.getHeight())*10000)/10000.0;
 		double scale_w = Math.round((w / AlbumArt.getWidth())*10000)/10000.0;
 
@@ -328,10 +386,15 @@ public class mcdj
     	try {
 			ImageIO.write(albumtexture, "PNG", new File(respath+"textures/items", "record_"+ curfile +".png"));
 		} catch (IOException e) {
-			mcdj.logger.error("Error writing album art texture, default texture will be used!"+e.getMessage());
+			mcdj.logger.error("Error creating custom disc texture, default texture will be used!"+e.getMessage());
 			return false;
 		}
     	return true;
     }
 	
+	public static int getrand(String name, int c) {
+		int r = Math.abs((name.hashCode() % 256) - c);
+		while (r > 255) r = r/2;
+		return r;
+	}
 }

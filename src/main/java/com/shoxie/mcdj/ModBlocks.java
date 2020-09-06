@@ -1,7 +1,7 @@
 package com.shoxie.mcdj;
 
-import com.shoxie.mcdj.block.BlockMusicGenerator;
+import com.shoxie.mcdj.block.MusicGeneratorBlock;
 
 public class ModBlocks {
-	public static BlockMusicGenerator MUSIC_GENERATOR = new BlockMusicGenerator();
+	public static MusicGeneratorBlock MUSIC_GENERATOR = new MusicGeneratorBlock();
 }

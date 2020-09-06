@@ -12,9 +12,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import net.minecraft.item.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 
 public class Lib {
 	
@@ -64,9 +61,11 @@ public class Lib {
     
 	public static String HashMusicDir(File[] lomf) {
 		String chk = "";
-		for (int i = 0; i < lomf.length; i++) {
+		for (int i = 0; i < lomf.length; i++) 
 			chk = chk + lomf[i].getName()+lomf[i].length();
-		}
+		
+		
+		chk = chk + (Config.IsHiResTexture() ? 1 : 0) + (Config.AlbumArts() ? 1 : 0);
 		return Integer.toString(chk.hashCode());
 	}
 	  
@@ -110,7 +109,7 @@ public class Lib {
 	}
 	
 	public static void generateItemJson(String fname, Boolean art, String respath) {
-		String name = (art) ? fname : mcdj.DEFAULT_RECORD_TEXTURE;
+		String name = (art) ? fname : Config.IsHiResTexture() ? mcdj.DEFTEXTURE : mcdj.DEFTEXTURE16;
 		String json=
 				"{" + 
 					"\"parent\": \"item/generated\"," + 
@@ -140,26 +139,6 @@ public class Lib {
 			langfile = langfile + "," + "\n\""+type+"."+mcdj.MODID+"."+cname+".desc\": \""+desc+"\"";
 		
 		return langfile;
-	}
-	
-	
-	public static Item getVanillaRecord(int num) {
-		switch(num)
-		{
-			case 1: return new ItemStack(Items.MUSIC_DISC_13).getItem();
-			case 2: return new ItemStack(Items.MUSIC_DISC_BLOCKS).getItem();
-			case 3: return new ItemStack(Items.MUSIC_DISC_CAT).getItem();
-			case 4: return new ItemStack(Items.MUSIC_DISC_CHIRP).getItem();
-			case 5: return new ItemStack(Items.MUSIC_DISC_FAR).getItem();
-			case 6: return new ItemStack(Items.MUSIC_DISC_MALL).getItem();
-			case 7: return new ItemStack(Items.MUSIC_DISC_MELLOHI).getItem();
-			case 8: return new ItemStack(Items.MUSIC_DISC_STAL).getItem();
-			case 9: return new ItemStack(Items.MUSIC_DISC_STRAD).getItem();
-			case 10: return new ItemStack(Items.MUSIC_DISC_WAIT).getItem();
-			case 11: return new ItemStack(Items.MUSIC_DISC_WARD).getItem();
-			case 12: return new ItemStack(Items.field_234775_qK_).getItem();
-			default: return new ItemStack(Items.MUSIC_DISC_11).getItem();
-		}
 	}
 
 	public static boolean ismusic(String s) {
