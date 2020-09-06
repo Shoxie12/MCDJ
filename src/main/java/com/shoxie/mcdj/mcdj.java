@@ -8,7 +8,10 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -26,7 +29,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.gagravarr.vorbis.VorbisFile;
-import com.shoxie.mcdj.item.ItemHQRecord;
+import com.shoxie.mcdj.item.ItemCustomRecord;
 import com.shoxie.mcdj.proxy.CommonProxy;
 
 @Mod(modid = mcdj.MODID, name = mcdj.NAME, version = mcdj.VERSION)
@@ -38,7 +41,8 @@ public class mcdj
     public static Logger logger = LogManager.getLogger(MODID);
     public static Configuration config;
     
-    public static final String DEFAULT_RECORD_TEXTURE = "record_default";
+	public static final String DEFTEXTURE = "defaultrecord";
+	public static final String DEFTEXTURE16 = "defaultrecord16";
 	public static final String DEFAULT_BLANK_RECORD_SOUND = "br";
     public static boolean musicloaded;
     private boolean playlistchanged;
@@ -54,6 +58,8 @@ public class mcdj
 	@Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {	
+		proxy.preInit(event);
+		
 		File directory = event.getModConfigurationDirectory();
         config = new Configuration(new File(directory.getPath(), "mcdj.cfg"));
         Config.readConfig();
@@ -73,7 +79,7 @@ public class mcdj
 
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
-
+		proxy.init(event);
 	}
 
 	@Mod.EventHandler
@@ -84,9 +90,6 @@ public class mcdj
         }
 	}
 
-	
-	
-	
 	private void MusicScan(String rootpath, String respath, String musicpath) {
 		File rp = Paths.get(rootpath).toFile();
     	boolean rootexist = rp.exists();
@@ -95,7 +98,7 @@ public class mcdj
     		if(rootexist) logger.error("MCDJ Root directory is damaged! Repairing...");
     		GenerateResourcePack(rootpath, respath);
     		rootcreated = true;
-    		if(Config.sr) Lib.createSymLink(musicpath);
+    		if(Config.shortcut) Lib.createSymLink(musicpath);
     	}
     	else
     		logger.info("Scanning music folder...");
@@ -105,7 +108,7 @@ public class mcdj
     	String soundsj = "";
     	String lang = "";
     	ArrayList<SoundEvent> sounds = new ArrayList<SoundEvent>();
-	    ArrayList<ItemHQRecord> records = new ArrayList<ItemHQRecord>();
+	    ArrayList<ItemCustomRecord> records = new ArrayList<ItemCustomRecord>();
 		
 		//Scaning music folder
 		if(MusicFiles.length == 0) {
@@ -187,16 +190,14 @@ public class mcdj
 						}
 						
 						String displayname = Lib.ToUpperWords(curfile.replaceAll("_", " "));
-						boolean Albumarttexture = false;
-						
+						boolean customtexture = false;
 						//Getting vorbis data from ogg file
 						try {
 							VorbisFile vrb = new VorbisFile(Paths.get(musicpath+curfile+ext).toFile());
 							if(!(vrb.getTags().getTitle() == null || vrb.getTags().getArtist() == null))
 								displayname = vrb.getTags().getArtist() + " - " + vrb.getTags().getTitle();
 							
-							String art = vrb.getTags().getAlbumArt();
-							if(art!=null) Albumarttexture = GenerateAlbumArtTexture(curfile,art,respath);
+							customtexture = GenerateAlbumArtTexture(curfile,vrb.getTags().getAlbumArt(),respath);
 						} catch (FileNotFoundException e) {
 							logger.error("Error getting vorbis data from ogg file!"+e.getMessage());
 						} catch (IOException e) {
@@ -207,7 +208,7 @@ public class mcdj
 						String fc = soundsj.isEmpty() ? "{" : ",";
 						soundsj = soundsj + Lib.appendSounds(curfile,fc);
 						lang = lang + Lib.appendLang("item","record_"+curfile,"Music Disc",displayname,true);
-						Lib.generateItemJson("record_"+curfile,Albumarttexture, respath);
+						Lib.generateItemJson("record_"+curfile,customtexture, respath);
 					}
 					else if(matcher.find()) {
 						logger.warn(curfile+" has illegal symbols in name and can't be renamed, please rename this file manually.");
@@ -217,7 +218,7 @@ public class mcdj
 					
 					//Initialising sounds and records
 					SoundEvent snd = new SoundEvent(new ResourceLocation(mcdj.MODID,curfile)).setRegistryName(mcdj.MODID,curfile);
-					ItemHQRecord currec = new ItemHQRecord("record_"+curfile, snd);
+					ItemCustomRecord currec = new ItemCustomRecord("record_"+curfile,records.size(), snd);
 					sounds.add(snd);
 					if(!Config.headlessmode) records.add(currec);
 				}
@@ -238,7 +239,7 @@ public class mcdj
 				Lib.writefile(rootpath+"mc.hash",Lib.HashMusicDir(MusicFiles));
 			}
 			musicloaded = sounds.size() > 0;
-			if(!Config.headlessmode) ModItems.RECORDS = records.toArray(new ItemHQRecord[records.size()]);
+			if(!Config.headlessmode) ModItems.RECORDS = records.toArray(new ItemCustomRecord[records.size()]);
 			ModSoundEvents.RECORDS = sounds.toArray(new SoundEvent[sounds.size()]);
 		}
     }
@@ -268,28 +269,25 @@ public class mcdj
 	
 	private boolean GenerateAlbumArtTexture(String curfile,String base64image, String respath)
     {
-    	
+    	boolean artfound = false;
+		
     	//Getting album art from base64
-    	int ind = base64image.indexOf("/9j/");
-    	if(ind!=-1 && ind < 100)
-    		base64image = base64image.substring(ind);
-    	else {
-    		mcdj.logger.warn("Can't read album art of song "+curfile+" this image type doesn't support yet :("); 
-    		return false;
-    	}
-    	
-    	byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64image);
-    	BufferedImage AlbumArt = null;
-		try {
-			AlbumArt = ImageIO.read(new ByteArrayInputStream(imageBytes));
-		} catch (IOException e1) {
-			mcdj.logger.error("Error getting album art!"+e1.getMessage());
-			return false;
+		if(Config.albumarts && base64image != null) {
+	    	int ind = base64image.indexOf("/9j/");
+	    	if(ind!=-1 && ind < 100) {
+	    		base64image = base64image.substring(ind);
+	    		artfound = true;
+	    	}
+	    	else if(Config.hires_texture) return false;
 		}
+		else if(Config.hires_texture) return false;
 		
     	BufferedImage Basetexture = null;
 		try {
-			Basetexture = ImageIO.read(getClass().getClassLoader().getResourceAsStream("record_base.png"));
+			if(Config.hires_texture)
+				Basetexture = ImageIO.read(getClass().getClassLoader().getResourceAsStream("custom.png"));
+			else
+				Basetexture = ImageIO.read(getClass().getClassLoader().getResourceAsStream("custom16.png"));
 		} catch (IOException e1) {
 			mcdj.logger.error("Error getting base texture! Try to reinstall MCDJ"+e1.getMessage());
 			return false;
@@ -300,6 +298,28 @@ public class mcdj
 		double wb = Basetexture.getWidth();
 		double h = hb/2.28;
 		double w = wb/3.37;
+		
+    	BufferedImage AlbumArt = null;
+    	if(artfound) {
+	    	byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64image);
+			try {
+				AlbumArt = ImageIO.read(new ByteArrayInputStream(imageBytes));
+			} catch (IOException e1) {
+				mcdj.logger.error("Error getting album art!"+e1.getMessage());
+			}
+    	}
+    	
+    	else if(AlbumArt == null){
+    		AlbumArt = new BufferedImage((int)hb/2, (int)wb/2, BufferedImage.TYPE_INT_ARGB);
+    		Graphics2D g2d = AlbumArt.createGraphics();
+    		
+    		//GradientPaint p = new GradientPaint(0, 0, new Color(getrand(curfile, 50),getrand(curfile, 150),getrand(curfile, 250)), (int)h, (int)w, new Color(getrand(curfile, 500),getrand(curfile, 300),getrand(curfile, 450)));
+    		Color p = new Color(getrand(curfile, 50),getrand(curfile, 100),getrand(curfile, 150));
+    		//g2d.setPaint ( new Color ( getrand(curfile,2), getrand(curfile,5), getrand(curfile,3) ) );
+    		g2d.setPaint (p);
+    		g2d.fillRect (0, 0, AlbumArt.getWidth(), AlbumArt.getHeight());
+    	}
+		
 		double scale_h = Math.round((h / AlbumArt.getHeight())*10000)/10000.0;
 		double scale_w = Math.round((w / AlbumArt.getWidth())*10000)/10000.0;
 
@@ -325,10 +345,15 @@ public class mcdj
     	try {
 			ImageIO.write(albumtexture, "PNG", new File(respath+"textures/items", "record_"+ curfile +".png"));
 		} catch (IOException e) {
-			mcdj.logger.error("Error writing album art texture, default texture will be used!"+e.getMessage());
+			mcdj.logger.error("Error creating custom disc texture, default texture will be used!"+e.getMessage());
 			return false;
 		}
     	return true;
     }
 	
+	public static int getrand(String name, int c) {
+		int r = Math.abs((name.hashCode() % 256) - c);
+		while (r > 255) r = r/2;
+		return r;
+	}
 }

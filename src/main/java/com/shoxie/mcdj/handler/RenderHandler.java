@@ -4,7 +4,7 @@ import com.shoxie.mcdj.Config;
 import com.shoxie.mcdj.ModBlocks;
 import com.shoxie.mcdj.ModItems;
 import com.shoxie.mcdj.mcdj;
-import com.shoxie.mcdj.item.ItemHQRecord;
+import com.shoxie.mcdj.item.ItemCustomRecord;
 
 import net.minecraft.item.Item;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -20,7 +20,7 @@ public class RenderHandler {
 		mcdj.proxy.renderItem(ModItems.BLANK_RECORD, 0, ModItems.BLANK_RECORD.getRegistryName());
 		
 		if(mcdj.musicloaded && !Config.headlessmode) 
-			for (ItemHQRecord i : ModItems.RECORDS) 
+			for (ItemCustomRecord i : ModItems.RECORDS) 
 				mcdj.proxy.renderItem(i, 0, i.getRegistryName());
 		
 	}

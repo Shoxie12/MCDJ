@@ -5,6 +5,7 @@ import com.shoxie.mcdj.ModBlocks;
 import com.shoxie.mcdj.ModItems;
 import com.shoxie.mcdj.ModSoundEvents;
 import com.shoxie.mcdj.mcdj;
+import com.shoxie.mcdj.tile.TileMusicGenerator;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -13,6 +14,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraftforge.event.RegistryEvent.Register;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 @Mod.EventBusSubscriber
 public class RegisterHandler {
@@ -25,6 +27,7 @@ public class RegisterHandler {
 	@SubscribeEvent
 	public static void onBlockRegister(Register<Block> e) {
 		e.getRegistry().register(ModBlocks.MUSIC_GENERATOR);
+		GameRegistry.registerTileEntity(TileMusicGenerator.class, mcdj.MODID + "_musicgenerator");
 	}
 	
 	@SubscribeEvent
@@ -36,6 +39,4 @@ public class RegisterHandler {
 		if(mcdj.musicloaded && !Config.headlessmode) 
 			e.getRegistry().registerAll(ModItems.RECORDS);
 	}
-	
-
 }

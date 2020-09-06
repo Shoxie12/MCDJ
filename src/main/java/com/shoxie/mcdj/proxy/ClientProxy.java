@@ -3,18 +3,46 @@ package com.shoxie.mcdj.proxy;
 import java.io.File;
 import java.util.List;
 
+import com.shoxie.mcdj.mcdj;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.FolderResourcePack;
 import net.minecraft.client.resources.IResourcePack;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class ClientProxy extends CommonProxy {
+	
+	@Override
+	public World getClientWorld() {
+		return Minecraft.getMinecraft().world;
+	}
+	
+	@Override
+	public EntityPlayer getClientPlayer() {
+		return Minecraft.getMinecraft().player;
+	}
+	
+    @Override
+    public void preInit(FMLPreInitializationEvent e) {
+        super.preInit(e);
+        OBJLoader.INSTANCE.addDomain(mcdj.MODID);
+    }
+
+    @Override
+    public void init(FMLInitializationEvent e) {
+        super.init(e);
+    }
 	
 	@Override
 	public void renderItem(Item item, int meta, ResourceLocation rl) {

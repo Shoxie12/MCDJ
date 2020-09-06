@@ -64,13 +64,15 @@ public class Lib {
 		}
 	}
     
-    protected static String HashMusicDir(File[] lomf) {
+	public static String HashMusicDir(File[] lomf) {
 		String chk = "";
-		for (int i = 0; i < lomf.length; i++) {
+		for (int i = 0; i < lomf.length; i++) 
 			chk = chk + lomf[i].getName()+lomf[i].length();
-		}
+		
+		
+		chk = chk + (Config.hires_texture ? 1 : 0) + (Config.albumarts ? 1 : 0);
 		return Integer.toString(chk.hashCode());
-    }
+	}
     
     protected static void cleanAll(String respath) {
 		try {
@@ -111,7 +113,7 @@ public class Lib {
 	}
 	
     protected static void generateItemJson(String fname, Boolean art, String respath) {
-		String name = (art) ? fname : mcdj.DEFAULT_RECORD_TEXTURE;
+    	String name = (art) ? fname : Config.hires_texture ? mcdj.DEFTEXTURE : mcdj.DEFTEXTURE16;
 		String json=
 				"{" + 
 					"\"parent\": \"item/generated\"," + 
