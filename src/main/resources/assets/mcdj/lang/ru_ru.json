@@ -1,6 +1,9 @@
 {
   "item.mcdj.blankrecord": "Пустая пластинка",
+  "item.mcdj.musicdisc": "Пластинка",
   "item.mcdj.blankrecord.desc": "(тишина)",
   "item.mcdj.obsidianplate": "Обсидиановая пластина",
+  "gui.mcdj.genbtn": "Старт",
+  "message.mcdj.playlistempty": "Ваш плейлист пуст! Сначала вам нужно добавить музыку в игру.",
   "block.mcdj.musicgenerator": "Генератор музыки"
 }
