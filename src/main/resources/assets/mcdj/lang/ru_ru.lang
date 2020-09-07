@@ -2,3 +2,5 @@ item.blankrecord.name=Пустая пластинка
 item.record.blankrecord.desc=(тишина)
 item.obsidianplate.name=Обсидиановая пластина
 tile.musicgenerator.name=Генератор музыки
+gui.mcdj.genbtn=Старт
+message.mcdj.playlistempty=Ваш плейлист пуст! Сначала вам нужно добавить музыку в игру.
