@@ -48,8 +48,7 @@ public class BlockMusicGenerator extends Block implements ITileEntityProvider {
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
     	if(!mcdj.musicloaded) {
-	    	if (world.isRemote) return false;
-    		mcdj.proxy.getClientPlayer().sendMessage(new TextComponentTranslation("message.mcdj.playlistempty"));
+    		player.sendMessage(new TextComponentTranslation("message.mcdj.playlistempty"));
     		return false;
     	}
     	
