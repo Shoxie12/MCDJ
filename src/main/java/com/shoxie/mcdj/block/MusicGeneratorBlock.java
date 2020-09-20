@@ -53,8 +53,7 @@ public class MusicGeneratorBlock extends Block{
     @Override
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult result) {
     	if(!mcdj.musicloaded) {
-	    	if (world.isRemote) return ActionResultType.PASS;
-    		mcdj.proxy.getClientPlayer().sendMessage(new TranslationTextComponent("message.mcdj.playlistempty"));
+	    	player.sendMessage(new TranslationTextComponent("message.mcdj.playlistempty"));
     		return ActionResultType.PASS;
     	}
     	

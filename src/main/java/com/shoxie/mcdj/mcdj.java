@@ -31,6 +31,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -143,7 +144,7 @@ public class mcdj
     	boolean rootcreated = false;
     	if(!CheckResourcePack(rootpath, respath)) {
     		if(rootexist) logger.error("MCDJ Root directory is damaged! Repairing...");
-    		GenerateResourcePack(rootpath, respath);
+    		GenerateResourcePack(rootpath, respath, rootexist);
     		rootcreated = true;
     		if(Config.IsShortcutRequied()) Lib.createSymLink(musicpath);
     	}
@@ -291,20 +292,25 @@ public class mcdj
 	
 	private static boolean CheckResourcePack(String r, String res) {
 		return (
-				Paths.get(res+"models/item").toFile().exists() && 
-				Paths.get(res+"textures/items").toFile().exists() && 
-				Paths.get(res+"sounds/streaming").toFile().exists() && 
-				Paths.get(res+"lang").toFile().exists() &&
+				Files.isDirectory(Paths.get(res+"models/item")) && 
+				Files.isDirectory(Paths.get(res+"textures/items")) && 
+				Files.isDirectory(Paths.get(res+"sounds/streaming")) && 
+				Files.isDirectory(Paths.get(res+"lang")) && 
 				Paths.get(r+"pack.mcmeta").toFile().exists()
 				);
 	}
 	
-	private static void GenerateResourcePack(String r, String res) {
+	private static boolean GenerateResourcePack(String r, String res, boolean rootexist) {
+		if(!rootexist) mcdj.logger.info("MCDJ is installing...");
 		Paths.get(res+"models/item").toFile().mkdirs();
 		Paths.get(res+"textures/items").toFile().mkdirs();
-		Paths.get(res+"sounds/streaming/").toFile().mkdirs();
+		Paths.get(res+"sounds/streaming").toFile().mkdirs();
 		Paths.get(res+"lang").toFile().mkdirs();
-		Lib.writefile(r+"pack.mcmeta","{\"pack\": {\"pack_format\": 3,\"description\": \"mcdj\"}}");
+		Lib.writefile(r+"pack.mcmeta","{\"pack\": {\"pack_format\": 4,\"description\": \"mcdj\"}}");
+		
+		if(Paths.get(r+"mc.hash").toFile().exists())
+			Paths.get(r+"mc.hash").toFile().delete();
+		return true;
 	}
 	
 	private boolean GenerateAlbumArtTexture(String curfile,String base64image, String respath)
