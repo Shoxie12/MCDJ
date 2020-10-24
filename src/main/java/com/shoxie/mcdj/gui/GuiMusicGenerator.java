@@ -57,6 +57,13 @@ public class GuiMusicGenerator extends GuiContainer {
     }
     
     @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+     this.drawDefaultBackground();
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        renderHoveredToolTip(mouseX, mouseY);
+    }
+	
+    @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException
     {
         if (!mgfw.textboxKeyTyped(typedChar, keyCode))
