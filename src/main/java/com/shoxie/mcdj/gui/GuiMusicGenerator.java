@@ -60,6 +60,7 @@ public class GuiMusicGenerator extends GuiContainer {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
      this.drawDefaultBackground();
         super.drawScreen(mouseX, mouseY, partialTicks);
+        mgfw.drawTextBox();
         renderHoveredToolTip(mouseX, mouseY);
     }
 	
@@ -77,12 +78,6 @@ public class GuiMusicGenerator extends GuiContainer {
     	super.mouseClicked(mouseX, mouseY, mouseButton);
     	mgfw.mouseClicked(mouseX - this.guiLeft, mouseY - this.guiTop, mouseButton);
     	mgfw.setFocused(true);
-    }
-    
-    @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
-        mgfw.drawTextBox();
     }
     
     @Override
