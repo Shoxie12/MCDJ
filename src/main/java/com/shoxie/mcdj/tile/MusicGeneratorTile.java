@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 
 import com.shoxie.mcdj.ModItems;
 import com.shoxie.mcdj.ModTileEntities;
+import com.shoxie.mcdj.mcdj;
 import com.shoxie.mcdj.container.MusicGeneratorContainer;
 import com.shoxie.mcdj.item.BlankDiscItem;
 import com.shoxie.mcdj.item.CustomDiscItem;
@@ -57,12 +58,13 @@ public class MusicGeneratorTile extends TileEntity implements ITickableTileEntit
     	else {
 	    	if (!this.world.isRemote) {
 		    	ItemStack disc = this.getItemInSlot(0);
-		    	if(
-			    	!disc.isEmpty() && (this.discid >= 0 && this.discid < ModItems.RECORDS.length) &&
-			    	disc.getItem() instanceof BlankDiscItem && this.getGenTime() < 1 &&
-			    	Started
-		    	)
-		    	FinaliseGen(new ItemStack(ModItems.RECORDS[this.discid]));
+		    	if(disc != null && mcdj.musicloaded)
+			    	if(
+				    	!disc.isEmpty() && (this.discid >= 0 && this.discid < ModItems.RECORDS.length) &&
+				    	disc.getItem() instanceof BlankDiscItem && this.getGenTime() < 1 &&
+				    	Started
+			    	)
+			    	FinaliseGen(new ItemStack(ModItems.RECORDS[this.discid]));
 	    	}
     	}
     }
