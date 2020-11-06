@@ -115,12 +115,13 @@ public class TileMusicGenerator extends TileEntity implements ITickable{
     	else {
 	    	if (!this.world.isRemote) {
 		    	ItemStack disc = this.getItemInSlot(0);
-		    	if(
-			    	!disc.isEmpty() && (this.discid >= 0 && this.discid < ModItems.RECORDS.length) &&
-			    	disc.getItem() instanceof ItemBlankRecord && this.getGenTime() < 1 &&
-			    	Started
-		    	)
-		    	FinaliseGen(new ItemStack(ModItems.RECORDS[this.discid]));
+		    	if(disc != null && mcdj.musicloaded)
+			    	if(
+				    	!disc.isEmpty() && (this.discid >= 0 && this.discid < ModItems.RECORDS.length) &&
+				    	disc.getItem() instanceof ItemBlankRecord && this.getGenTime() < 1 &&
+				    	Started
+			    	)
+			    	FinaliseGen(new ItemStack(ModItems.RECORDS[this.discid]));
 	    	}
     	}
 	}
