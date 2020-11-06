@@ -32,7 +32,7 @@ public class CustomDiscItem extends MusicDiscItem {
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-	    tooltip.add(this.getRecordDescriptionWithId().func_240699_a_(TextFormatting.GRAY));
+	    tooltip.add(this.getRecordDescriptionWithId().mergeStyle(TextFormatting.GRAY));
 	}
 	
 	@OnlyIn(Dist.CLIENT)

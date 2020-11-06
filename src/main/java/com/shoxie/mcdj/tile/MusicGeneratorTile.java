@@ -5,7 +5,6 @@ import javax.annotation.Nullable;
 
 import com.shoxie.mcdj.ModItems;
 import com.shoxie.mcdj.ModTileEntities;
-import com.shoxie.mcdj.mcdj;
 import com.shoxie.mcdj.container.MusicGeneratorContainer;
 import com.shoxie.mcdj.item.BlankDiscItem;
 import com.shoxie.mcdj.item.CustomDiscItem;
@@ -58,13 +57,12 @@ public class MusicGeneratorTile extends TileEntity implements ITickableTileEntit
     	else {
 	    	if (!this.world.isRemote) {
 		    	ItemStack disc = this.getItemInSlot(0);
-		    	if(disc != null && mcdj.musicloaded)
-			    	if(
-				    	!disc.isEmpty() && (this.discid >= 0 && this.discid < ModItems.RECORDS.length) &&
-				    	disc.getItem() instanceof BlankDiscItem && this.getGenTime() < 1 &&
-				    	Started
-			    	)
-			    	FinaliseGen(new ItemStack(ModItems.RECORDS[this.discid]));
+		    	if(
+			    	!disc.isEmpty() && (this.discid >= 0 && this.discid < ModItems.RECORDS.length) &&
+			    	disc.getItem() instanceof BlankDiscItem && this.getGenTime() < 1 &&
+			    	Started
+		    	)
+		    	FinaliseGen(new ItemStack(ModItems.RECORDS[this.discid]));
 	    	}
     	}
     }
@@ -127,11 +125,11 @@ public class MusicGeneratorTile extends TileEntity implements ITickableTileEntit
     }
     
     @Override
-    public void func_230337_a_(BlockState p_230337_1_, CompoundNBT tag) {
+    public void read(BlockState p_230337_1_, CompoundNBT tag) {
 	    CompoundNBT compound = tag.getCompound("items");
 	    GenTime = tag.getInt("GenTime");
 	    handler.ifPresent(h -> ((INBTSerializable<CompoundNBT>)h).deserializeNBT(compound));
-	    super.func_230337_a_(p_230337_1_, tag);
+	    super.read(p_230337_1_, tag);
     }
     
     @Override

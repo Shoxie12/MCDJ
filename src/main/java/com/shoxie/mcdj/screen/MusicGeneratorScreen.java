@@ -48,15 +48,15 @@ public class MusicGeneratorScreen extends ContainerScreen<MusicGeneratorContaine
     }
 	
     @Override
-    public void func_231160_c_() {
-        super.func_231160_c_();
-        field_230710_m_.clear();
-        mgfw = new MusicGeneratorTextField(this.field_230712_o_, guiLeft + 110,guiTop + 78,32,10,new StringTextComponent(Integer.toString(tile.discid)), tile, this);
-        func_230480_a_(mgfw);
+    public void init() {
+        super.init();
+        buttons.clear();
+        mgfw = new MusicGeneratorTextField(this.font, guiLeft + 110,guiTop + 78,32,10,new StringTextComponent(Integer.toString(tile.discid)), tile, this);
+        addButton(mgfw);
         
-        func_230480_a_(new Button(guiLeft + 106, guiTop + 46, 20, 20, new TranslationTextComponent(" > "), (button) ->  {if(!this.container.isProcessing()) this.setDisc(1);}));
-        func_230480_a_(new Button(guiLeft + 39, guiTop + 46, 20, 20, new TranslationTextComponent(" < "), (button) -> {if(!this.container.isProcessing()) this.setDisc(2);}));
-        func_230480_a_(new Button(guiLeft + 12, guiTop + 73, 49, 20, new TranslationTextComponent(" Generate "), (button) -> gendisc()));
+        addButton(new Button(guiLeft + 106, guiTop + 46, 20, 20, new TranslationTextComponent(" > "), (button) ->  {if(!this.container.isProcessing()) this.setDisc(1);}));
+        addButton(new Button(guiLeft + 39, guiTop + 46, 20, 20, new TranslationTextComponent(" < "), (button) -> {if(!this.container.isProcessing()) this.setDisc(2);}));
+        addButton(new Button(guiLeft + 12, guiTop + 73, 49, 20, new TranslationTextComponent(" Generate "), (button) -> gendisc()));
     }
     
     public void setDisc(int opt) {
@@ -73,9 +73,9 @@ public class MusicGeneratorScreen extends ContainerScreen<MusicGeneratorContaine
     }
     
     @Override
-    public boolean func_231044_a_(double p_231044_1_, double p_231044_3_, int p_231044_5_) {
+    public boolean mouseClicked(double p_231044_1_, double p_231044_3_, int p_231044_5_) {
     	if(this.isPointInRegion(this.container.getSlot(previewslot).xPos,this.container.getSlot(previewslot).yPos, 16, 16, p_231044_1_, p_231044_3_)) return true;
-    	return super.func_231044_a_(p_231044_1_, p_231044_3_, p_231044_5_);
+    	return super.mouseClicked(p_231044_1_, p_231044_3_, p_231044_5_);
     }
     
     private void sendid() {
@@ -89,33 +89,33 @@ public class MusicGeneratorScreen extends ContainerScreen<MusicGeneratorContaine
 
 
     @Override
-    public void func_230430_a_(MatrixStack p_230430_1_, int p_230430_2_, int p_230430_3_, float p_230430_4_) {
-        this.func_230446_a_(p_230430_1_);
-        super.func_230430_a_(p_230430_1_, p_230430_2_, p_230430_3_, p_230430_4_);
-        this.func_230459_a_(p_230430_1_,p_230430_2_, p_230430_3_);
+    public void render(MatrixStack p_230430_1_, int p_230430_2_, int p_230430_3_, float p_230430_4_) {
+        this.renderBackground(p_230430_1_);
+        super.render(p_230430_1_, p_230430_2_, p_230430_3_, p_230430_4_);
+        this.renderHoveredTooltip(p_230430_1_,p_230430_2_, p_230430_3_);
         
     }
 	
 
     @Override
-    protected void func_230450_a_(MatrixStack p_230450_1_, float p_230450_2_, int p_230450_3_, int p_230450_4_) {
+    protected void drawGuiContainerBackgroundLayer(MatrixStack p_230450_1_, float p_230450_2_, int p_230450_3_, int p_230450_4_) {
     	GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.field_230706_i_.getTextureManager().bindTexture(GUI);
-        this.func_238474_b_(p_230450_1_, this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
+        this.minecraft.getTextureManager().bindTexture(GUI);
+        this.blit(p_230450_1_, this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
         int i = ((MusicGeneratorContainer)this.container).getGenTime(24);
-        if(this.container.isProcessing()) this.func_238474_b_(p_230450_1_, this.guiLeft + 73, this.guiTop + 47, 176, 0, 24 - i, 17);
-        else this.func_238474_b_(p_230450_1_, this.guiLeft + 73, this.guiTop + 47, 176, 0, 0, 17);
+        if(this.container.isProcessing()) this.blit(p_230450_1_, this.guiLeft + 73, this.guiTop + 47, 176, 0, 24 - i, 17);
+        else this.blit(p_230450_1_, this.guiLeft + 73, this.guiTop + 47, 176, 0, 0, 17);
     }
 	
 	@Override
-    protected void func_230451_b_(MatrixStack p_230450_1_, int mouseX, int mouseY) {
+    protected void drawGuiContainerForegroundLayer(MatrixStack p_230450_1_, int mouseX, int mouseY) {
 		if(this.container.getSlot(previewslot).getStack().getItem() instanceof MusicDiscItem) {
 			MusicDiscItem mdi = (MusicDiscItem) this.container.getSlot(previewslot).getStack().getItem();
-			String str = mdi.func_234801_g_().getString();
+			String str = mdi.getDescription().getString();
 			if(str.length() > maxstrlen)
 				drawMovingString(p_230450_1_, str);
 			else
-				this.field_230712_o_.func_238405_a_(p_230450_1_,str, 8, 5, 0xffffff);
+				this.font.drawString(p_230450_1_,str, 8, 5, 0xffffff);
 		}
 		else if(!this.container.isProcessing()){
 			setDisc(0);
@@ -142,7 +142,7 @@ public class MusicGeneratorScreen extends ContainerScreen<MusicGeneratorContaine
 	        if(msend < 0) msend = 0;
 	
 	        String s = (" "+sname+" ").substring(msstart < 0 ? 0 : msstart, msend < 0 ? 0 : msstart > msend ? msstart : msend+1);
-	        this.field_230712_o_.func_238405_a_(p_230450_1_, s, 10, 5, 0xffffff);
+	        this.font.drawString(p_230450_1_, s, 10, 5, 0xffffff);
         }
 		
 	}

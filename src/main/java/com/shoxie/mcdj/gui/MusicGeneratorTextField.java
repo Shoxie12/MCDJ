@@ -29,9 +29,9 @@ public class MusicGeneratorTextField extends TextFieldWidget{
 	}
 
 	@Override
-	public boolean func_231042_a_(char typedChar, int keyCode) {
+	public boolean charTyped(char typedChar, int keyCode) {
 		if(isAllowedCharacter(typedChar) || isAllowedKey(keyCode))
-			return super.func_231042_a_(typedChar, keyCode);
+			return super.charTyped(typedChar, keyCode);
 		return false;
 	}
 
