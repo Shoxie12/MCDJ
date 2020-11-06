@@ -44,6 +44,11 @@ public class MusicGeneratorTextField extends TextFieldWidget {
 	
 	@Override
 	public void writeText(String textToWrite) {
+		if(tile.isProcessing()){ return; }
+		try {
+			Integer.parseInt(textToWrite);
+		}
+		catch(NumberFormatException e) { return; }
 		super.writeText(textToWrite);
 		syncid();
 		scr.setDisc(0);

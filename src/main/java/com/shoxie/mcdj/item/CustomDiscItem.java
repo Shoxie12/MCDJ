@@ -12,6 +12,7 @@ import net.minecraft.item.MusicDiscItem;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -30,11 +31,11 @@ public class CustomDiscItem extends MusicDiscItem {
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-	    tooltip.add(this.getRecordDescriptionWithId());
+	    tooltip.add(this.getRecordDescriptionWithId().applyTextStyle(TextFormatting.GRAY));
 	}
 	
 	@OnlyIn(Dist.CLIENT)
-	public StringTextComponent getRecordDescriptionWithId() {
+	public ITextComponent getRecordDescriptionWithId() {
 	    return new StringTextComponent(soundid+". " + new TranslationTextComponent(this.getTranslationKey() + ".desc").getString());
 	}
 }
