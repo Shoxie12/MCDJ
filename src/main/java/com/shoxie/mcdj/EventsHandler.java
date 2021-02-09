@@ -29,7 +29,7 @@ public class EventsHandler {
 	}
 	
 	private static void updateEntityLoot(LootTable table, String tablename) {
-		table.addPool(LootPool.builder().
+		table.addPool(LootPool.builder().name("mcdj").
 				addEntry(TableLootEntry.
 						builder(new ResourceLocation(mcdj.MODID, tablename))).build());
 	}
