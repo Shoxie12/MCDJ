@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
@@ -105,6 +107,7 @@ public class mcdj
     		logger.info("Scanning music folder...");
     	proxy.rpinit(rp);
     	File[] MusicFiles = Paths.get(musicpath).toFile().listFiles();
+		Arrays.sort(MusicFiles, Comparator.comparing(File::getName));
     	String type = "";
     	String soundsj = "";
     	String lang = "";
