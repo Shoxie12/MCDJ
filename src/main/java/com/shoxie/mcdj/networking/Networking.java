@@ -1,32 +1,35 @@
 package com.shoxie.mcdj.networking;
 
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import com.shoxie.mcdj.mcdj;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.network.*;
 
 public class Networking {
 
-    public static SimpleChannel INSTANCE;
-    private static int ID = 0;
-
-    public static int nextID() {
-        return ID++;
-    }
+    private static final SimpleChannel INSTANCE = ChannelBuilder.named(
+            new ResourceLocation(mcdj.MODID, "main"))
+            .serverAcceptedVersions((status, version) -> true)
+            .clientAcceptedVersions((status, version) -> true)
+            .networkProtocolVersion(1)
+            .simpleChannel();
 
     public static void registerMessages() {
-        INSTANCE = NetworkRegistry.newSimpleChannel(new ResourceLocation(com.shoxie.mcdj.mcdj.MODID, "mcdj"), () -> "1.0", s -> true, s -> true);
+        //MGGenPacket
+        INSTANCE.messageBuilder(MGGenPacket.class, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(MGGenPacket::encode)
+                .decoder(MGGenPacket::new)
+                .consumerMainThread(MGGenPacket::handle)
+                .add();
 
-        INSTANCE.registerMessage(nextID(),
-        		MGGenPacket.class,
-        		MGGenPacket::toBytes,
-        		MGGenPacket::new,
-        		MGGenPacket::handle);
-        
-        INSTANCE.registerMessage(nextID(),
-        		MGDiscidUpdPacket.class,
-        		MGDiscidUpdPacket::toBytes,
-        		MGDiscidUpdPacket::new,
-        		MGDiscidUpdPacket::handle);
-        
+        //MGDiscidUpdPacket
+        INSTANCE.messageBuilder(MGDiscidUpdPacket.class, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(MGDiscidUpdPacket::encode)
+                .decoder(MGDiscidUpdPacket::new)
+                .consumerMainThread(MGDiscidUpdPacket::handle)
+                .add();
+    }
+
+    public static void sendToServer(Object msg) {
+        INSTANCE.send(msg, PacketDistributor.SERVER.noArg());
     }
 }

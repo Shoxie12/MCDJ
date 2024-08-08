@@ -1,0 +1,7 @@
+{
+    "parent": "block/cube_top",
+    "textures": {
+        "side": "mcdj:block/mg_side",
+        "top": "mcdj:block/mg_top"
+    }
+}

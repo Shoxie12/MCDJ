@@ -1,17 +1,14 @@
 package com.shoxie.mcdj.item;
 
-import com.shoxie.mcdj.ModSoundEvents;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.MusicDiscItem;
-import net.minecraft.util.SoundEvent;
+import com.shoxie.mcdj.init.Init;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.RecordItem;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraftforge.registries.RegistryObject;
 
-public class BlankDiscItem extends MusicDiscItem {
-	
-	private static String name = "blankrecord";
-	protected static SoundEvent snd = ModSoundEvents.BLANK_RECORD;
+public class BlankDiscItem extends RecordItem {
+	public static String name = "blank_record";
 	public BlankDiscItem() {
-		super(0, snd,new Item.Properties().group(ItemGroup.MISC).maxStackSize(1));
-		setRegistryName(name);
+		super(14, Init.BLANK_RECORD_SOUND_EVENT,(new Item.Properties()).stacksTo(1), 40);
 	}
 }

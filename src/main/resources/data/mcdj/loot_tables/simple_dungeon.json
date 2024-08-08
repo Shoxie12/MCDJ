@@ -1,12 +1,12 @@
 {
     "pools": [
         {
-            "name": "pool1",
+            "name": "sealed_record",
             "rolls": 1,
             "entries": [
                 {
                     "type": "item",
-                    "name": "mcdj:blankrecord",
+                    "name": "mcdj:sealed_record",
                     "weight": 1
                 },
                 {

@@ -1,13 +1,11 @@
 package com.shoxie.mcdj.item;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.world.item.Item;
 
 public class ObsidianPlateItem extends Item{
 	
-	private static String name = "obsidianplate";
+	public static final String name = "obsidian_plate";
 	public ObsidianPlateItem() {
-		super(new Item.Properties().group(ItemGroup.MISC));
-		setRegistryName(name);
+		super(new Item.Properties());
 	}
 }

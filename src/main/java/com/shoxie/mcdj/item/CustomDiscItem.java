@@ -1,42 +1,40 @@
 package com.shoxie.mcdj.item;
 
+import com.shoxie.mcdj.Config;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.RecordItem;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+
 import java.util.List;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.MusicDiscItem;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraftforge.registries.RegistryObject;
 
-public class CustomDiscItem extends MusicDiscItem {
+public class CustomDiscItem extends RecordItem {
 	public String name;
-	private int soundid;
-	public CustomDiscItem(String _name, SoundEvent snd, int soundid) {
-		super(0, snd,new Item.Properties().group(ItemGroup.MISC).maxStackSize(1));
-		name = "record_"+_name;
-		setRegistryName(name);
-		this.soundid = soundid;
+	public RegistryObject<SoundEvent> snd;
+	private final int id;
+	public CustomDiscItem(String _name, RegistryObject<SoundEvent> _snd, int duration, int id) {
+		super(14, _snd,(new Item.Properties()).stacksTo(1),duration * 20);
+		snd = _snd;
+		name = _name;
+		this.id = id;
 	}
 	
-	@Override
-	@OnlyIn(Dist.CLIENT)
-	public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-	    tooltip.add(this.getRecordDescriptionWithId().mergeStyle(TextFormatting.GRAY));
-	}
+ 	@Override
 	
-	@OnlyIn(Dist.CLIENT)
-	public IFormattableTextComponent getRecordDescriptionWithId() {
-	    return new StringTextComponent(soundid+". " + new TranslationTextComponent(this.getTranslationKey() + ".desc").getString());
+	public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+	     tooltip.add(Component.literal(
+				 (Config.isTrackNumbersEnabled() ? id + ". " : "") + Component.translatable(this.getDescriptionId() + ".desc").getString()).withStyle(ChatFormatting.GRAY));
+	}
+
+	public int getTrackId() {
+		return this.id;
 	}
 }

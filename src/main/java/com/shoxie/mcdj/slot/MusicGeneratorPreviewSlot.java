@@ -2,8 +2,8 @@ package com.shoxie.mcdj.slot;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -13,12 +13,12 @@ public class MusicGeneratorPreviewSlot extends SlotItemHandler{
 	}
 	
     @Override
-    public boolean canTakeStack(PlayerEntity playerIn) {
+    public boolean mayPickup(Player playerIn) {
     	return false;
     }
     
 	@Override
-	public boolean isItemValid(@Nonnull ItemStack stack) {
+	public boolean mayPlace(@Nonnull ItemStack stack) {
 	    return false;
 	}
 }

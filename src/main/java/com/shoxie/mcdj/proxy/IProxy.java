@@ -1,28 +1,16 @@
 package com.shoxie.mcdj.proxy;
 
-import java.io.File;
+import net.minecraft.client.Minecraft;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import java.util.Map;
 
 public interface IProxy {
- 
 
-    void rpinit(File rp);
-	
-
-	void rpreload();
-	
-
-	String getCWD();
-
+	Map<String, String> getPreInitModTranslationsMap();
 
 	void ScreenInit();
 
+	void checkFFmpeg();
 
-	World getClientWorld();
-
-
-	PlayerEntity getClientPlayer();
-
+	
 }

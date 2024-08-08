@@ -6,12 +6,12 @@
             "entries": [
                 {
                     "type": "minecraft:item",
-                    "name": "mcdj:blankrecord",
+                    "name": "mcdj:sealed_record",
                     "weight": 1
                 },
                 {
                     "type": "empty",
-                    "weight": 25
+                    "weight": 1
                 }
             ]
         }

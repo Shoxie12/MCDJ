@@ -1,23 +1,12 @@
 package com.shoxie.mcdj.proxy;
 
-import java.io.File;
-
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import com.shoxie.mcdj.Lib;
+import java.util.Map;
 
 public class ServerProxy implements IProxy {
-	
-    @Override
-	public void rpinit(File rp) {
-	}
 
-	@Override
-	public void rpreload() {
-	}
-	
-	@Override
-	public String getCWD(){
-		return System.getProperty("user.dir")+"/";
+	public Map<String, String> getPreInitModTranslationsMap() {
+		return Lib.getPreInitModTranslationsMap("en_us");
 	}
 
 	@Override
@@ -25,13 +14,6 @@ public class ServerProxy implements IProxy {
 	}
 
 	@Override
-	public World getClientWorld() {
-		return null;
+	public void checkFFmpeg() {
 	}
-	
-	@Override
-	public PlayerEntity getClientPlayer() {
-		return null;
-	}
-
 }

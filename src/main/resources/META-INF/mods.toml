@@ -1,15 +1,18 @@
 modLoader="javafml"
-loaderVersion="[33,)"
+loaderVersion="[46,)"
 issueTrackerURL="https://github.com/Shoxie12/MCDJ/issues"
 license="Apache License"
 [[mods]]
 modId="mcdj"
-version="2.1"
+version="3.0.0"
 displayName="MCDJ"
 logoFile="mcdj.png"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/mcdj"
-credits="This mod is uses a VorbisJava library by gagravarr"
+credits=""
 authors="Shoxie"
 description='''
-Allows you to add an unlimited amount of your music as music discs!
+Allows you to add an unlimited amount of music disc in just a few clicks!
+
+MCDJ uses FFmpeg to work with mp3
+MCDJ is uses a VorbisJava library by gagravarr
 '''
