@@ -24,6 +24,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
 public class MusicGeneratorBlock extends Block implements EntityBlock {
@@ -52,7 +53,7 @@ public class MusicGeneratorBlock extends Block implements EntityBlock {
 
 	    else if (Config.isMGenabled()) {
             if (player instanceof ServerPlayer sp) {
-                sp.openMenu((MenuProvider) blockEntity, pos);
+                NetworkHooks.openScreen(sp,(MenuProvider) blockEntity,pos);
             }
         }
         return InteractionResult.CONSUME;

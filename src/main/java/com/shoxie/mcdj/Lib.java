@@ -26,9 +26,14 @@ import com.shoxie.mcdj.init.Init;
 import com.shoxie.mcdj.misc.discRegData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.FilePackResources;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackCompatibility;
+import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.world.flag.FeatureFlagSet;
 import org.apache.commons.io.FileUtils;
@@ -556,14 +561,12 @@ public final class Lib {
 		final Component name = Component.literal("MCDJ Resource Pack");
 		final Component description = Component.literal("Makes possible to create custom music discs");
 		Minecraft.getInstance().getResourcePackRepository().addPackFinder(nameToPackMap -> nameToPackMap.accept(
-                Pack.create(id, description, true, new PathPackResources.PathResourcesSupplier(
-                                Paths.get(getPlaylistRootPath()),true
-                        ),
+                Pack.create(id, description, true, s -> new PathPackResources(s,Paths.get(getPlaylistRootPath()),true),
                         new Pack.Info(
-                                description, PackCompatibility.COMPATIBLE, FeatureFlagSet.of(), new ArrayList<>()
-                        ), Pack.Position.TOP,false,
+                                description, 13, FeatureFlagSet.of()
+                        ), PackType.CLIENT_RESOURCES, Pack.Position.TOP, true,
 
-                        new PackSource(){
+                        new PackSource() {
 
                             @Override
                             public Component decorate(Component p_decorate_1_) {

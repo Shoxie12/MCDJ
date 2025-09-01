@@ -138,7 +138,7 @@ private FFmpegThreadList thrlist;
 
  @Override
  public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-     super.render(guiGraphics, mouseX, mouseY, partialTicks);
+
     this.thrlist.render(guiGraphics, mouseX, mouseY, partialTicks);
 
      if(!this.started){
@@ -153,12 +153,13 @@ private FFmpegThreadList thrlist;
      guiGraphics.drawCenteredString(this.font, getTranslated("gui.mcdj.trackconvertingscreen.errors") + ": "+errors, 60, 18, 8421504);
      if(!this.started) guiGraphics.drawCenteredString(this.font,  getTranslated("gui.mcdj.trackconvertingscreen."+(stopped ? "canceled" : "finished")) , this.width - 60, 13, 8421504);
      thrlist.updateList();
+     super.render(guiGraphics, mouseX, mouseY, partialTicks);
  }
 
  
  class FFmpegThreadList extends ObjectSelectionList<TrackConvertingScreen.FFmpegThreadList.Entry> {
     public FFmpegThreadList(Minecraft p_96103_) {
-       super(p_96103_, TrackConvertingScreen.this.width, TrackConvertingScreen.this.height, 32, TrackConvertingScreen.this.height / 18 + 4);
+       super(p_96103_, TrackConvertingScreen.this.width, TrackConvertingScreen.this.height, 32,TrackConvertingScreen.this.height - 65 + 4,18);
 
        if (this.getSelected() != null) {
           this.centerScrollOn(this.getSelected());

@@ -41,7 +41,7 @@ public class Init {
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, mcdj.MODID);
 
     //Blocks, BIs, BEs
-    public static final RegistryObject<MusicGeneratorBlock> MUSIC_GENERATOR = BLOCKS.register("music_generator", () -> new MusicGeneratorBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).strength(3.0f, 10f)));
+    public static final RegistryObject<MusicGeneratorBlock> MUSIC_GENERATOR = BLOCKS.register("music_generator", () -> new MusicGeneratorBlock(BlockBehaviour.Properties.of().strength(3.0f, 10f)));
 
     public static final RegistryObject<Item> MUSIC_GENERATOR_ITEM =
             ITEMS.register("music_generator", () -> new BlockItem(MUSIC_GENERATOR.get(), new Item.Properties()));

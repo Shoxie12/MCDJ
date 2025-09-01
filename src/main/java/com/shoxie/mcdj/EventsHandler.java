@@ -7,6 +7,7 @@ import com.shoxie.mcdj.networking.Networking;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.repository.Pack;
@@ -52,9 +53,8 @@ public class EventsHandler {
 		if(event.getPackType() == PackType.SERVER_DATA){
 			{
 				var pack = Pack.readMetaAndCreate("builtin/mcdj_tags", Component.literal("MCDJ"), false,
-						new PathPackResources.PathResourcesSupplier(
-								Paths.get(getPlaylistRootPath()),true
-						), PackType.SERVER_DATA, Pack.Position.TOP, PackSource.BUILT_IN);
+                        s -> new PathPackResources(s,Paths.get(getPlaylistRootPath()),true),
+                        PackType.SERVER_DATA, Pack.Position.TOP, PackSource.BUILT_IN);
 				event.addRepositorySource((packConsumer) -> packConsumer.accept(pack));
 			}
 		}

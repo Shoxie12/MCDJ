@@ -7,7 +7,10 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.minecraftforge.network.NetworkEvent;
+
+import java.util.function.Supplier;
+//import net.minecraftforge.event.server.CustomPayloadEvent;
 
 public class MGDiscidUpdPacket {
     private int discid;
@@ -26,8 +29,8 @@ public class MGDiscidUpdPacket {
         buf.writeBlockPos(pos);
     }
 
-    public void handle(CustomPayloadEvent.Context context) {
-        ServerPlayer player = context.getSender();
+    public void handle(Supplier<NetworkEvent.Context> context) {
+        ServerPlayer player = context.get().getSender();
         if(player == null)
             return;
 

@@ -125,7 +125,7 @@ public final class PlaylistScreen extends Screen {
     @Override
     public void render(GuiGraphics guigraphics, int X, int Y, float p_281886_) {
         Lib.Checkffmpeg();
-        super.render(guigraphics, X, Y, p_281886_);
+
          if(!mcdj.ffmpegfound && showwarn){
             showwarn = false;
             Component component = Component.translatable("message.mcdj.error.ffmpegnotfound1");
@@ -166,6 +166,7 @@ public final class PlaylistScreen extends Screen {
                      delbutton.visible = true;
                   else
                      delbutton.visible = playbutton.visible = stopbutton.visible = true;
+        super.render(guigraphics, X, Y, p_281886_);
 
     }
 
@@ -173,7 +174,7 @@ public final class PlaylistScreen extends Screen {
        private Entry lastselected;
 
       public Playlist(Minecraft p_96103_) {
-          super(p_96103_, PlaylistScreen.this.width, PlaylistScreen.this.height - 93, 32, 18);
+          super(p_96103_, PlaylistScreen.this.width, PlaylistScreen.this.height, 32, PlaylistScreen.this.height - 65 + 4,18);
           boolean flag = true;
           for(MusicFile iMus : mcdj.currentPlaylist) {
             PlaylistScreen.Playlist.Entry iEn = new PlaylistScreen.Playlist.Entry(iMus);
