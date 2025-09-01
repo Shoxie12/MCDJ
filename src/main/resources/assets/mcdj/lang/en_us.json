@@ -54,6 +54,7 @@
   "message.mcdj.error.ffmpegnotfound1": "FFmpeg not found!",
   "message.mcdj.error.ffmpegnotfound2": "Without FFmpeg installed you can only add .ogg media files.",
   "message.mcdj.error.ffmpegnotfound3": "You may need to reboot your PC after installing FFmpeg",
+  "message.mcdj.error.installffmpeg": "Install FFmpeg",
   "message.mcdj.debug.procfile": "Processing file",
   "message.mcdj.playlistempty": "Your playlist is empty. You can add new tracks via playlist menu (Main menu > Mods > MCDJ > Config)",
   "message.mcdj.playlistchanged": "Playlist was changed.",

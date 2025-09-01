@@ -54,6 +54,7 @@
   "message.mcdj.error.ffmpegnotfound1": "FFmpeg не обнаружен!",
   "message.mcdj.error.ffmpegnotfound2": "Без FFmpeg вы можете добавлять только .ogg файлы",
   "message.mcdj.error.ffmpegnotfound3": "После установки FFmpeg возможно потребуется перезагрузка ПК",
+  "message.mcdj.error.installffmpeg": "Установить FFmpeg",
   "message.mcdj.debug.procfile": "Обрабатывается файл",
   "message.mcdj.playlistempty": "Ваш плейлист пуст. Добавьте новых треков через меню настроек плейлиста (Main menu > Mods > MCDJ > Config)",
   "message.mcdj.playlistchanged": "Плейлист был изменён.",

@@ -26,7 +26,7 @@ public class mcdj
 {
     public static final String MODID = "mcdj";
     public static final String NAME = "MCDJ";
-    public static final String VERSION = "3.0";
+    public static final String VERSION = "3.0.1";
 	public static final String DEFAULT_BLANK_RECORD_SOUND = "br";
 	public static final String DEFTEXTURE = "defaultrecord";
 	public static final int DEFAULT_SONG_DURATION = 300;
