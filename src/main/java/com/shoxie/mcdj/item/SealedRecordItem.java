@@ -24,11 +24,12 @@ public class SealedRecordItem extends Item {
 		super.use(p_41432_,player,p_41434_);
         ItemStack itemstack = player.getItemInHand(p_41434_);
         if(!Init.CUSTOM_RECORD_ITEMS.isEmpty()) {
-
+            ItemStack it = Lib.getRandomMusicDisc(player);
+            if(it.isEmpty()) return InteractionResultHolder.pass(itemstack);
             if (itemstack.isEmpty()) {
-                player.setItemInHand(player.getUsedItemHand(), Lib.getRandomMusicDisc());
+                player.setItemInHand(player.getUsedItemHand(), it);
             } else {
-                player.getInventory().add(Lib.getRandomMusicDisc());
+                player.getInventory().add(it);
                 itemstack.setCount(itemstack.getCount()-1);
             }
             return InteractionResultHolder.pass(itemstack);
@@ -42,10 +43,12 @@ public class SealedRecordItem extends Item {
         if(!Init.CUSTOM_RECORD_ITEMS.isEmpty()) {
             ItemStack itemstack = player.getItemInHand(player.getUsedItemHand());
             itemstack.setCount(itemstack.getCount()-1);
+            ItemStack it = Lib.getRandomMusicDisc(player);
+            if(it.isEmpty()) return InteractionResult.PASS;
             if (itemstack.isEmpty()) {
-                player.setItemInHand(player.getUsedItemHand(), Lib.getRandomMusicDisc());
+                player.setItemInHand(player.getUsedItemHand(), it);
             } else {
-                player.getInventory().add(Lib.getRandomMusicDisc());
+                player.getInventory().add(it);
             }
             return InteractionResult.CONSUME;
         }

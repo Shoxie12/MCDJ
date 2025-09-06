@@ -26,7 +26,7 @@ public class mcdj
 {
     public static final String MODID = "mcdj";
     public static final String NAME = "MCDJ";
-    public static final String VERSION = "3.0.1";
+    public static final String VERSION = "3.0.2";
 	public static final String DEFAULT_BLANK_RECORD_SOUND = "br";
 	public static final String DEFTEXTURE = "defaultrecord";
 	public static final int DEFAULT_SONG_DURATION = 300;
@@ -50,7 +50,7 @@ public class mcdj
         MinecraftForge.EVENT_BUS.register(this);   
         ModLoadingContext.get().registerConfig(Type.COMMON, Config.cfg);
         Config.loadConfig(Config.cfg, FMLPaths.CONFIGDIR.get().resolve("mcdj-common.toml"));
-		RECORDS_DATA = Lib.MusicScan();
+        RECORDS_DATA = Lib.MusicScan();
 		final var bus = FMLJavaModLoadingContext.get().getModEventBus();
 		Init.SOUND_EVENTS.register(bus);
 		if(!Config.isNoDiscsModEnabled()) {
@@ -60,5 +60,9 @@ public class mcdj
 			Init.MENU_TYPES.register(bus);
 		}
 		proxy.checkFFmpeg();
+    }
+
+    public static boolean isModLoaded() {
+        return Init.MUSIC_GENERATOR.isPresent();
     }
 }

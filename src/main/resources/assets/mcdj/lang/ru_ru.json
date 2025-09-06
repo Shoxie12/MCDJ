@@ -57,6 +57,7 @@
   "message.mcdj.error.installffmpeg": "Установить FFmpeg",
   "message.mcdj.debug.procfile": "Обрабатывается файл",
   "message.mcdj.playlistempty": "Ваш плейлист пуст. Добавьте новых треков через меню настроек плейлиста (Main menu > Mods > MCDJ > Config)",
+  "message.mcdj.playlistdifferent": "Ваш плейлист не совпадает с плейлистом сервера. Убедитесь что на сервере и у вас добавлена одинаковая музыка",
   "message.mcdj.playlistchanged": "Плейлист был изменён.",
   "message.mcdj.stopconverting": "Остановлено пользователем.",
   "message.mcdj.musicscanning": "Сканирую текущий плейлист...",

@@ -2,6 +2,7 @@ package com.shoxie.mcdj.entity;
 
 import javax.annotation.Nullable;
 
+import com.shoxie.mcdj.Lib;
 import com.shoxie.mcdj.init.Init;
 import com.shoxie.mcdj.item.BlankDiscItem;
 import com.shoxie.mcdj.item.CustomDiscItem;
@@ -37,7 +38,7 @@ public class MusicGeneratorEntity extends BlockEntity implements Nameable, MenuP
 	// 0 = Slot for blank 1 = Preview slot
 	public int slotscnt = 2;
 	private int GenTime = 0;
-	
+
     public MusicGeneratorEntity(BlockPos p_155229_, BlockState p_155230_) {
 		super(Init.MUSIC_GENERATOR_ENTITY.get(), p_155229_, p_155230_);
 		
@@ -62,7 +63,7 @@ public class MusicGeneratorEntity extends BlockEntity implements Nameable, MenuP
 			    	disc.getItem() instanceof BlankDiscItem && mgtile.getGenTime() < 1 &&
 			    	mgtile.Started
 		    	)
-		    		mgtile.FinaliseGen(new ItemStack(Init.CUSTOM_RECORD_ITEMS.get(mgtile.discid).get()));
+                    Lib.getCustomRecordFromID(mgtile.discid,null);
 	    	}
     	}
     }
@@ -104,7 +105,7 @@ public class MusicGeneratorEntity extends BlockEntity implements Nameable, MenuP
 		if(this.discid >= Init.CUSTOM_RECORD_ITEMS.size()) return;
 
 		inventory.extractItem(1, 1, false);
-		inventory.insertItem(1, new ItemStack(Init.CUSTOM_RECORD_ITEMS.get(this.discid).get()), false);
+		inventory.insertItem(1, Lib.getCustomRecordFromID(this.discid,null), false);
 	}
 
 	public void clearPreviewSlot(){

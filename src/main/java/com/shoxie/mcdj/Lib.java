@@ -35,6 +35,7 @@ import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackCompatibility;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.PackSource;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.flag.FeatureFlagSet;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -511,10 +512,19 @@ public final class Lib {
 		return ret;
 	}
 
-	public static ItemStack getRandomMusicDisc() {
+	public static ItemStack getRandomMusicDisc(Player player) {
 		Random rand = new Random();
 		int discid = rand.nextInt(Init.CUSTOM_RECORD_ITEMS.size());
-		return new ItemStack(Init.CUSTOM_RECORD_ITEMS.get(discid).get());
+        return getCustomRecordFromID(discid, player);
+    }
+
+    public static ItemStack getCustomRecordFromID(int discid, Player player) {
+        if (Init.CUSTOM_RECORD_ITEMS.get(discid).isPresent())
+            return new ItemStack(Init.CUSTOM_RECORD_ITEMS.get(discid).get());
+        else {
+            if(player != null) player.sendSystemMessage(Component.translatable("message.mcdj.playlistdifferent"));
+            return ItemStack.EMPTY;
+        }
     }
 
 	public static String getCWD(){

@@ -36,20 +36,20 @@ public class EventsHandler {
 	//Screens
 	@SubscribeEvent
 	public static void ScreenInit(FMLClientSetupEvent event) {
-		if (Config.isNoDiscsModEnabled()) return;
+		if (Config.isNoDiscsModEnabled() || !mcdj.isModLoaded()) return;
 		MenuScreens.register(Init.MUSIC_GENERATOR_MENU.get(), MusicGeneratorScreen::new);
 		proxy.ScreenInit();
 	}
 
 	@SubscribeEvent
 	public static void commonSetup(FMLCommonSetupEvent event) {
-		if (Config.isNoDiscsModEnabled()) return;
+		if (Config.isNoDiscsModEnabled() || !mcdj.isModLoaded()) return;
 		event.enqueueWork(Networking::registerMessages);
 	}
 
 	@SubscribeEvent
 	public static void AddPackFinders(AddPackFindersEvent event) {
-		if (Config.isNoDiscsModEnabled()) return;
+		if (Config.isNoDiscsModEnabled() || !mcdj.isModLoaded()) return;
 		if(event.getPackType() == PackType.SERVER_DATA){
 			{
 				var pack = Pack.readMetaAndCreate("builtin/mcdj_tags", Component.literal("MCDJ"), false,
@@ -62,7 +62,7 @@ public class EventsHandler {
 
 	@SubscribeEvent
 	public static void buildContents(BuildCreativeModeTabContentsEvent event) {
-		if (Config.isNoDiscsModEnabled()) return;
+		if (Config.isNoDiscsModEnabled() || !mcdj.isModLoaded()) return;
 		if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
 			event.accept(Init.MUSIC_GENERATOR_ITEM);
 			event.accept(Init.SEALED_RECORD_ITEM);
@@ -70,7 +70,8 @@ public class EventsHandler {
 			event.accept(Init.OBSIDIAN_PLATE);
 
 			for (var iRecord : Init.CUSTOM_RECORD_ITEMS) {
-				event.accept(iRecord);
+                if(iRecord.isPresent())
+				    event.accept(iRecord);
 			}
 		}
 	}
@@ -79,7 +80,7 @@ public class EventsHandler {
 	public static class LootEventHandler {
 		@SubscribeEvent
 		public static void onLoot(final LootTableLoadEvent e) {
-			if (Config.isNoDiscsModEnabled()) return;
+			if (Config.isNoDiscsModEnabled() || !mcdj.isModLoaded()) return;
 			if (
 					Config.isDungeonSpawnEnabled() &&
 							(e.getName().equals(new ResourceLocation("minecraft", "chests/abandoned_mineshaft")) ||

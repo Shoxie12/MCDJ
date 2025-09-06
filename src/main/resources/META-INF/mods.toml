@@ -4,7 +4,7 @@ issueTrackerURL="https://github.com/Shoxie12/MCDJ/issues"
 license="Apache License"
 [[mods]]
 modId="mcdj"
-version="3.0.1"
+version="3.0.2"
 displayName="MCDJ"
 logoFile="mcdj.png"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/mcdj"
